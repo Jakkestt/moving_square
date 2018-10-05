@@ -61,10 +61,10 @@ impl Cube {
             ButtonState::Press => {
                 if let Button::Keyboard(key) = button_args.button {
                     match key {
-                        Key::Right => self.right_d = true,
-                        Key::Left => self.left_d = true,
-                        Key::Down => self.down_d = true,
-                        Key::Up => self.up_d = true,
+                        Key::D => self.right_d = true,
+                        Key::A => self.left_d = true,
+                        Key::S => self.down_d = true,
+                        Key::W => self.up_d = true,
                         _ => {}
                     }
                 }
@@ -73,10 +73,10 @@ impl Cube {
 
                 if let Button::Keyboard(key) = button_args.button {
                     match key {
-                        Key::Right => self.right_d = false,
-                        Key::Left => self.left_d = false,
-                        Key::Down => self.down_d = false,
-                        Key::Up => self.up_d = false,
+                        Key::D => self.right_d = false,
+                        Key::A => self.left_d = false,
+                        Key::S => self.down_d = false,
+                        Key::W => self.up_d = false,
                         _ => {}
                     }
                 }
@@ -124,7 +124,7 @@ fn main() {
         window.draw_2d(&e, |c, g| {
             let transform = c.transform.trans(10.0, 100.0);
 
-            text::Text::new_color([0.0, 1.0, 0.0, 1.0], 32).draw(
+            text::Text::new_color([0.0, 1.0, 0.0, 1.0], 64).draw(
                 "Hello world!",
                 &mut glyphs,
                 &c.draw_state,
