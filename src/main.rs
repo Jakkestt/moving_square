@@ -14,6 +14,9 @@ pub struct Cube {
     gl: GlGraphics,
     x: f64,
     y: f64,
+    height: f64,
+    width: f64,
+    size: f64,
     up_d: bool, down_d: bool, left_d: bool, right_d: bool
 }
 
@@ -23,7 +26,7 @@ impl Cube {
 
         let red = [1.0, 0.0, 0.0, 1.0];
 
-        let square = rectangle::square(0.0, 0.0, 100.0);
+        let square = rectangle::square(0.0, 0.0, 50.0);
         let (object_x, object_y) = ((self.x) as f64,
                                     (self.y) as f64);
 
@@ -35,25 +38,41 @@ impl Cube {
                                         .trans(object_x, object_y);
 
             rectangle(red, square, transform, gl);
+            println!("{}", object_x)
         });
     }
 
-    fn update(&mut self, args: &UpdateArgs) {
+    fn update(&mut self, upd: &UpdateArgs) {
+        let widthcol = (self.width / 2.0) as f64;
+        let heightcol = (self.height / 2.0) as f64;
+        let rad = (self.size / 2.0) as f64;
+        if self.x < -widthcol + rad {
+            self.left_d = false;
+        }
+        if self.x > widthcol- rad {
+            self.right_d = false;
+        }
+        if self.y < -heightcol + rad {
+            self.up_d = false;
+        }
+        if self.y > heightcol - rad {
+            self.down_d = false;
+        }
         if self.up_d {
             //self.player.mov(0.0, -150.0 * upd.dt);
-            self.y += -500.0 * args.dt;
+            self.y += -500.0 * upd.dt;
         }
         if self.down_d {
             //self.player.mov(0.0, 150.0 * upd.dt);
-            self.y += 500.0 * args.dt;
+            self.y += 500.0 * upd.dt;
         }
         if self.left_d {
             //self.player.mov(-150.0 * upd.dt, 0.0);
-            self.x += -500.0 * args.dt;
+            self.x += -500.0 * upd.dt;
         }
         if self.right_d {
             //self.player.mov(150.0 * upd.dt, 0.0);
-            self.x += 500.0 * args.dt;
+            self.x += 500.0 * upd.dt;
         }
     }
     fn on_input(&mut self, button_args: &ButtonArgs) {
@@ -105,6 +124,9 @@ fn main() {
         gl: GlGraphics::new(opengl),
         x : 0.0,
         y : 0.0,
+        height: 720.0,
+        width: 1280.0,
+        size: 50.0,
         up_d: false,
         down_d: false,
         left_d: false,
