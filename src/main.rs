@@ -38,7 +38,6 @@ impl Cube {
                                         .trans(object_x, object_y);
 
             rectangle(red, square, transform, gl);
-            println!("{}", object_x)
         });
     }
 
@@ -46,16 +45,16 @@ impl Cube {
         let widthcol = (self.width / 2.0) as f64;
         let heightcol = (self.height / 2.0) as f64;
         let rad = (self.size / 2.0) as f64;
-        if self.x < -widthcol + rad {
+        if self.x <= -widthcol + rad {
             self.left_d = false;
         }
-        if self.x > widthcol- rad {
+        if self.x >= widthcol- rad {
             self.right_d = false;
         }
-        if self.y < -heightcol + rad {
+        if self.y <= -heightcol + rad {
             self.up_d = false;
         }
-        if self.y > heightcol - rad {
+        if self.y >= heightcol - rad {
             self.down_d = false;
         }
         if self.up_d {
