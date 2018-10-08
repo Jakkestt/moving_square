@@ -21,7 +21,7 @@ pub struct Cube {
 }
 
 impl Cube {
-    fn render(&mut self, args: &RenderArgs) {
+    fn on_draw(&mut self, args: &RenderArgs) {
         use graphics::*;
 
         let red = [1.0, 0.0, 0.0, 1.0];
@@ -137,7 +137,7 @@ fn main() {
             cube.update(&u);
         }
         if let Some(r) = e.render_args() {
-            cube.render(&r);
+            cube.on_draw(&r);
         }
         if let Some(i) = e.button_args() {
             cube.on_input(&i);
