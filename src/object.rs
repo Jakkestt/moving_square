@@ -1,13 +1,14 @@
 use piston_window::*;
 use opengl_graphics::{ GlGraphics, OpenGL };
-
+use gfx_device_gl::{Resources, CommandBuffer};
+use gfx_graphics::GfxGraphics;
+use std::path::Path;
 
 pub struct Object {
     gl: GlGraphics,
     pub x: f64,
     pub y: f64,
 }
-
 
 #[allow(dead_code)]
 impl Object {
@@ -21,7 +22,7 @@ impl Object {
     }
     pub fn render<G>(&self, gl: &mut G, view: math::Matrix2d) where G: Graphics {
         let square = rectangle::square(0.0, 0.0, 50.0);
-        let red = [1.0, 0.0, 0.0, 1.0];
+        let red = [1.0, 0.0, 0.0, 0.0];
         rectangle(red, square, view.trans(self.x, self.y).trans(-25.0, -25.0), gl);
     }
 }
