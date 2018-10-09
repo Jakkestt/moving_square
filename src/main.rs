@@ -4,6 +4,9 @@ extern crate graphics;
 extern crate opengl_graphics;
 extern crate find_folder;
 
+mod object;
+use object::Object;
+
 use piston::window::WindowSettings;
 use piston::event_loop::*;
 use piston::input::*;
@@ -12,8 +15,7 @@ use opengl_graphics::{ GlGraphics, OpenGL };
 
 pub struct Cube {
     gl: GlGraphics,
-    x: f64,
-    y: f64,
+    player: Object,
     height: f64,
     width: f64,
     size: f64,
@@ -22,22 +24,12 @@ pub struct Cube {
 
 impl Cube {
     fn on_draw(&mut self, args: &RenderArgs) {
-        use graphics::*;
-
-        let red = [1.0, 0.0, 0.0, 1.0];
-
-        let square = rectangle::square(0.0, 0.0, 50.0);
-        let (object_x, object_y) = ((self.x) as f64,
-                                    (self.y) as f64);
+        let fuck_this = &self.player;
 
         self.gl.draw(args.viewport(), |c, gl| {
             clear([0.0, 0.0, 0.0, 1.0], gl);
-
-            let transform = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64)
-                                        .trans(-25.0, -25.0)
-                                        .trans(object_x, object_y);
-
-            rectangle(red, square, transform, gl);
+            let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
+            fuck_this.render(gl, center);
         });
     }
 
@@ -45,33 +37,17 @@ impl Cube {
         let widthcol = (self.width / 2.0) as f64;
         let heightcol = (self.height / 2.0) as f64;
         let rad = (self.size / 2.0) as f64;
-        if self.x <= -widthcol + rad {
-            self.left_d = false;
-        }
-        if self.x >= widthcol- rad {
-            self.right_d = false;
-        }
-        if self.y <= -heightcol + rad {
-            self.up_d = false;
-        }
-        if self.y >= heightcol - rad {
-            self.down_d = false;
-        }
         if self.up_d {
-            //self.player.mov(0.0, -150.0 * upd.dt);
-            self.y += -500.0 * upd.dt;
+            self.player.mov(0.0, -500.0 * upd.dt);
         }
         if self.down_d {
-            //self.player.mov(0.0, 150.0 * upd.dt);
-            self.y += 500.0 * upd.dt;
+            self.player.mov(0.0, 500.0 * upd.dt);
         }
         if self.left_d {
-            //self.player.mov(-150.0 * upd.dt, 0.0);
-            self.x += -500.0 * upd.dt;
+            self.player.mov(-500.0 * upd.dt, 0.0);
         }
         if self.right_d {
-            //self.player.mov(150.0 * upd.dt, 0.0);
-            self.x += 500.0 * upd.dt;
+            self.player.mov(500.0 * upd.dt, 0.0);
         }
     }
     fn on_input(&mut self, button_args: &ButtonArgs) {
@@ -121,8 +97,7 @@ fn main() {
 
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
-        x : 0.0,
-        y : 0.0,
+        player : Object::new(),
         height: 720.0,
         width: 1280.0,
         size: 50.0,
@@ -131,8 +106,7 @@ fn main() {
         left_d: false,
         right_d: false
     };
-    let mut events = Events::new(EventSettings::new());
-    while let Some(e) = events.next(&mut window) {
+    while let Some(e) = window.next() {
         if let Some(u) = e.update_args() {
             cube.update(&u);
         }
