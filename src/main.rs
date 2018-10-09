@@ -13,7 +13,7 @@ use object::Object;
 use piston::window::WindowSettings;
 use piston::input::*;
 use piston_window::*;
-use opengl_graphics::{ GlGraphics, OpenGL, Texture };
+use opengl_graphics::{ GlGraphics, OpenGL, Texture, GlyphCache };
 use std::path::Path;
 
 pub struct Cube {
@@ -28,12 +28,21 @@ pub struct Cube {
 impl Cube {
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
+        let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
+        let textx = self.player.x.to_string();
+        let texty = self.player.y.to_string();
         let rust_logo = Texture::from_path(&Path::new("./assets/fuck.png"),
                                        &TextureSettings::new()).unwrap();
 
         self.gl.draw(args.viewport(), |c, gl| {
             clear([0.0, 0.0, 0.0, 1.0], gl);
             let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
+            text::Text::new_color([0.0, 0.0, 1.0, 1.0], 25).draw(&texty,
+                                                                     &mut glyph_cache,
+                                                                     &DrawState::default(),
+                                                                     c.transform
+                                                                         .trans(10.0, 25.0),
+                                                                     gl).unwrap();
             image(&rust_logo, c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64).trans((fuck_this.x) as f64, (fuck_this.y) as f64).trans(-25.0, -25.0), gl);
             fuck_this.render(gl, center);
         });
