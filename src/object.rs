@@ -19,8 +19,11 @@ impl Object {
         self.x += x;
         self.y += y;
     }
-    pub fn colx(&mut self, x: f64) {
+    pub fn colx(x: f64) {
         self.x = x;
+    }
+    pub fn getHeight(&mut self, x: f64, y: f64) {
+        
     }
 
     pub fn render<G>(&self, gl: &mut G, view: math::Matrix2d) where G: Graphics {

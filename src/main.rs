@@ -37,6 +37,9 @@ impl Cube {
         let widthcol = (self.width / 2.0) as f64;
         let heightcol = (self.height / 2.0) as f64;
         let rad = (self.size / 2.0) as f64;
+        if self.x <= widthcol + rad {
+            self.left_d = false;
+        }
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
         }
