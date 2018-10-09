@@ -8,7 +8,6 @@ mod object;
 use object::Object;
 
 use piston::window::WindowSettings;
-use piston::event_loop::*;
 use piston::input::*;
 use piston_window::*;
 use opengl_graphics::{ GlGraphics, OpenGL };
@@ -37,8 +36,17 @@ impl Cube {
         let widthcol = (self.width / 2.0) as f64;
         let heightcol = (self.height / 2.0) as f64;
         let rad = (self.size / 2.0) as f64;
-        if self.x <= widthcol + rad {
+        if self.player.x <= -widthcol + rad {
             self.left_d = false;
+        }
+        if self.player.x >= widthcol - rad {
+            self.right_d = false;
+        }
+        if self.player.y <= -heightcol + rad {
+            self.up_d = false;
+        }
+        if self.player.y >= heightcol - rad {
+            self.down_d = false;
         }
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
