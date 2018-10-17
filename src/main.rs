@@ -8,7 +8,9 @@ extern crate gfx_graphics;
 extern crate gfx;
 
 mod object;
+mod tree;
 use object::Object;
+use tree::Tree;
 
 use piston::window::WindowSettings;
 use piston::input::*;
@@ -19,6 +21,7 @@ use std::path::Path;
 pub struct Cube {
     gl: GlGraphics,
     player: Object,
+    trees: Tree,
     height: f64,
     width: f64,
     size: f64,
@@ -28,6 +31,7 @@ pub struct Cube {
 impl Cube {
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
+        let fuck_trees = &self.trees;
         let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
@@ -36,6 +40,7 @@ impl Cube {
 
         self.gl.draw(args.viewport(), |c, gl| {
             let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
+            let randomplace = c.transform.trans(300.0, 300.0);
             text::Text::new_color([1.0, 0.0, 0.0, 1.0], 25).draw(&textx,
                                                                      &mut glyph_cache,
                                                                      &DrawState::default(),
@@ -50,6 +55,7 @@ impl Cube {
                                                                      gl).unwrap();
             image(&rust_logo, c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64).trans((fuck_this.x) as f64, (fuck_this.y) as f64).trans(-25.0, -25.0), gl);
             fuck_this.render(gl, center);
+            fuck_trees.moar_trees(gl, randomplace);
         });
     }
 
@@ -68,6 +74,12 @@ impl Cube {
         }
         if self.player.y >= heightcol - rad {
             self.down_d = false;
+        }
+        if self.player.x <= -self.trees.x + 150.0 {
+            println!("Hello");
+        }
+        else {
+            println!("everything is ok");
         }
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
@@ -128,6 +140,7 @@ fn main() {
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
         player : Object::new(),
+        trees : Tree::new(),
         height: 720.0,
         width: 1280.0,
         size: 50.0,
