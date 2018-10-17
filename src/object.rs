@@ -1,9 +1,7 @@
 use piston_window::*;
 use opengl_graphics::{ GlGraphics, OpenGL };
 
-
 pub struct Object {
-    gl: GlGraphics,
     pub x: f64,
     pub y: f64,
 }
@@ -12,13 +10,17 @@ pub struct Object {
 #[allow(dead_code)]
 impl Object {
     pub fn new() -> Object {
-        let opengl = OpenGL::V3_2;
-        Object {gl: GlGraphics::new(opengl), x : 0.0, y : 0.0}
+        Object {x : 0.0, y : 0.0}
     }
     pub fn mov(&mut self, x: f64, y: f64) {
         self.x += x;
         self.y += y;
     }
+    pub fn mov_to(&mut self, x: f64, y: f64) {
+        self.x = x;
+        self.y = y;
+    }
+
     pub fn render<G>(&self, gl: &mut G, view: math::Matrix2d) where G: Graphics {
         let square = rectangle::square(0.0, 0.0, 50.0);
         let red = [1.0, 0.0, 0.0, 0.0];
