@@ -3,6 +3,9 @@ extern crate piston;
 extern crate graphics;
 extern crate opengl_graphics;
 extern crate find_folder;
+extern crate gfx_device_gl;
+extern crate gfx_graphics;
+extern crate gfx;
 
 mod object;
 use object::Object;
@@ -10,7 +13,8 @@ use object::Object;
 use piston::window::WindowSettings;
 use piston::input::*;
 use piston_window::*;
-use opengl_graphics::{ GlGraphics, OpenGL };
+use opengl_graphics::{ GlGraphics, OpenGL, Texture, GlyphCache };
+use std::path::Path;
 
 pub struct Cube {
     gl: GlGraphics,
@@ -24,10 +28,27 @@ pub struct Cube {
 impl Cube {
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
+        let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
+        let textx = self.player.x.to_string();
+        let texty = self.player.y.to_string();
+        let rust_logo = Texture::from_path(&Path::new("./assets/fuck.png"),
+                                       &TextureSettings::new()).unwrap();
 
         self.gl.draw(args.viewport(), |c, gl| {
-            clear([0.0, 0.0, 0.0, 1.0], gl);
             let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
+            text::Text::new_color([1.0, 0.0, 0.0, 1.0], 25).draw(&textx,
+                                                                     &mut glyph_cache,
+                                                                     &DrawState::default(),
+                                                                     c.transform
+                                                                         .trans(10.0, 25.0),
+                                                                     gl).unwrap();
+            text::Text::new_color([1.0, 0.0, 0.0, 1.0], 25).draw(&texty,
+                                                                     &mut glyph_cache,
+                                                                     &DrawState::default(),
+                                                                     c.transform
+                                                                         .trans(10.0, 50.0),
+                                                                     gl).unwrap();
+            image(&rust_logo, c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64).trans((fuck_this.x) as f64, (fuck_this.y) as f64).trans(-25.0, -25.0), gl);
             fuck_this.render(gl, center);
         });
     }
@@ -99,12 +120,10 @@ fn main() {
         .build()
         .unwrap();
 
-    let assets = find_folder::Search::ParentsThenKids(3, 3)
-        .for_folder("assets").unwrap();
-    println!("{:?}", assets);
-    let ref font = assets.join("FiraSans-Regular.ttf");
-    let factory = window.factory.clone();
-    let mut glyphs = Glyphs::new(font, factory, TextureSettings::new()).unwrap();
+    let mut gl = GlGraphics::new(opengl);
+
+    let background = Texture::from_path(&Path::new("./assets/background.png"),
+                                   &TextureSettings::new()).unwrap();
 
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
@@ -118,6 +137,15 @@ fn main() {
         right_d: false
     };
     while let Some(e) = window.next() {
+        use graphics::*;
+        if let Some(args) = e.render_args() {
+            gl.draw(args.viewport(), |c, g| {
+                let transform = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64)
+                                            .trans((-1280.0 / 2.0) as f64, (-720.0 / 2.0) as f64);
+
+            image(&background, transform, g)
+            });
+        }
         if let Some(u) = e.update_args() {
             cube.update(&u);
         }
@@ -127,15 +155,5 @@ fn main() {
         if let Some(i) = e.button_args() {
             cube.on_input(&i);
         }
-        window.draw_2d(&e, |c, g| {
-            let transform = c.transform.trans(10.0, 100.0);
-
-            text::Text::new_color([0.0, 1.0, 0.0, 1.0], 64).draw(
-                "Hello world!",
-                &mut glyphs,
-                &c.draw_state,
-                transform, g
-            ).unwrap();
-        });
     }
 }

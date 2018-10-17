@@ -13,7 +13,7 @@ pub struct Object {
 impl Object {
     pub fn new() -> Object {
         let opengl = OpenGL::V3_2;
-        Object { gl: GlGraphics::new(opengl), x : 0.0, y : 0.0 }
+        Object {gl: GlGraphics::new(opengl), x : 0.0, y : 0.0}
     }
     pub fn mov(&mut self, x: f64, y: f64) {
         self.x += x;
@@ -21,7 +21,7 @@ impl Object {
     }
     pub fn render<G>(&self, gl: &mut G, view: math::Matrix2d) where G: Graphics {
         let square = rectangle::square(0.0, 0.0, 50.0);
-        let red = [1.0, 0.0, 0.0, 1.0];
+        let red = [1.0, 0.0, 0.0, 0.0];
         rectangle(red, square, view.trans(self.x, self.y).trans(-25.0, -25.0), gl);
     }
 }
