@@ -6,6 +6,7 @@ extern crate find_folder;
 extern crate gfx_device_gl;
 extern crate gfx_graphics;
 extern crate gfx;
+extern crate rand;
 
 mod object;
 mod tree;
@@ -54,8 +55,8 @@ impl Cube {
                                                                          .trans(10.0, 50.0),
                                                                      gl).unwrap();
             image(&rust_logo, c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64).trans((fuck_this.x) as f64, (fuck_this.y) as f64).trans(-25.0, -25.0), gl);
+            fuck_trees.moar_trees(gl, center);
             fuck_this.render(gl, center);
-            fuck_trees.moar_trees(gl, randomplace);
         });
     }
 
@@ -75,11 +76,8 @@ impl Cube {
         if self.player.y >= heightcol - rad {
             self.down_d = false;
         }
-        if self.player.x <= -self.trees.x + 150.0 {
-            println!("Hello");
-        }
-        else {
-            println!("everything is ok");
+        if self.player.x <= self.trees.x {
+            self.left_d = false;
         }
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
