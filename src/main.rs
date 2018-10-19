@@ -7,6 +7,7 @@ extern crate gfx_device_gl;
 extern crate gfx_graphics;
 extern crate gfx;
 extern crate rand;
+extern crate sprite;
 
 mod object;
 mod tree;
@@ -16,8 +17,10 @@ use tree::Tree;
 use piston::window::WindowSettings;
 use piston::input::*;
 use piston_window::*;
-use opengl_graphics::{ GlGraphics, OpenGL, Texture, GlyphCache };
+use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache };
 use std::path::Path;
+use std::rc::Rc;
+use std::borrow::BorrowMut;
 
 pub struct Cube {
     gl: GlGraphics,
@@ -30,14 +33,23 @@ pub struct Cube {
 }
 
 impl Cube {
+    fn on_load(&mut self, w: &PistonWindow) {
+        let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
+        let texture = assets.join("rust.png");
+        let texture = Texture::from_path(
+                &mut *w.factory.borrow_mut(),
+                &texture,
+                Flip::None,
+                &TextureSettings::new())
+                .unwrap();
+        self.player.set_sprite(texture);
+    }
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
         let fuck_trees = &self.trees;
         let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
-        let rust_logo = Texture::from_path(&Path::new("./assets/fuck.png"),
-                                       &TextureSettings::new()).unwrap();
 
         self.gl.draw(args.viewport(), |c, gl| {
             let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
@@ -54,12 +66,10 @@ impl Cube {
                                                                      c.transform
                                                                          .trans(10.0, 50.0),
                                                                      gl).unwrap();
-            image(&rust_logo, c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64).trans((fuck_this.x) as f64, (fuck_this.y) as f64).trans(-25.0, -25.0), gl);
             fuck_trees.moar_trees(gl, center);
             fuck_this.render(gl, center);
         });
     }
-
     fn update(&mut self, upd: &UpdateArgs) {
         let widthcol = (self.width / 2.0) as f64;
         let heightcol = (self.height / 2.0) as f64;
@@ -131,10 +141,7 @@ fn main() {
         .unwrap();
 
     let mut gl = GlGraphics::new(opengl);
-
-    let background = Texture::from_path(&Path::new("./assets/background.png"),
-                                   &TextureSettings::new()).unwrap();
-
+    
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
         player : Object::new(),
@@ -147,16 +154,9 @@ fn main() {
         left_d: false,
         right_d: false
     };
+    cube.on_load(&window);
     while let Some(e) = window.next() {
         use graphics::*;
-        if let Some(args) = e.render_args() {
-            gl.draw(args.viewport(), |c, g| {
-                let transform = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64)
-                                            .trans((-1280.0 / 2.0) as f64, (-720.0 / 2.0) as f64);
-
-            image(&background, transform, g)
-            });
-        }
         if let Some(u) = e.update_args() {
             cube.update(&u);
         }
