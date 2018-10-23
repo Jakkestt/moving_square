@@ -3,18 +3,29 @@ extern crate piston;
 extern crate graphics;
 extern crate opengl_graphics;
 extern crate find_folder;
+extern crate gfx_device_gl;
+extern crate gfx_graphics;
+extern crate gfx;
+extern crate rand;
+extern crate sprite;
 
 mod object;
+mod tree;
+mod theme;
+use theme::Theme;
 use object::Object;
+use tree::Tree;
 
 use piston::window::WindowSettings;
 use piston::input::*;
 use piston_window::*;
-use opengl_graphics::{ GlGraphics, OpenGL };
+use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache, Texture };
 
 pub struct Cube {
     gl: GlGraphics,
     player: Object,
+    trees: Tree,
+    theme: Theme,
     height: f64,
     width: f64,
     size: f64,
@@ -22,16 +33,54 @@ pub struct Cube {
 }
 
 impl Cube {
+    fn on_load(&mut self, _w: &PistonWindow) {
+        let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
+        let player_sprite = assets.join("fuck.png");
+        let p1_sprite = Texture::from_path(
+                &player_sprite,
+                &TextureSettings::new())
+                .unwrap();
+        self.player.set_sprite(p1_sprite);
+        let background = assets.join("background.png");
+        let background = Texture::from_path(
+                &background,
+                &TextureSettings::new())
+                .unwrap();
+        self.theme.set_sprite(background);
+        let tree = assets.join("Tree.png");
+        let tree = Texture::from_path(
+                    &tree,
+                    &TextureSettings::new())
+                    .unwrap();
+        self.trees.set_sprite(tree);
+    }
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
+        let fuck_trees = &self.trees;
+        let fuck_theme = &self.theme;
+        let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
+        let textx = self.player.x.to_string();
+        let texty = self.player.y.to_string();
 
         self.gl.draw(args.viewport(), |c, gl| {
-            clear([0.0, 0.0, 0.0, 1.0], gl);
             let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
+            fuck_theme.rendertheme(gl, center);
+            fuck_trees.moar_trees(gl, center);
             fuck_this.render(gl, center);
+            text::Text::new_color([1.0, 0.0, 0.0, 1.0], 25).draw(&textx,
+                                                                     &mut glyph_cache,
+                                                                     &DrawState::default(),
+                                                                     c.transform
+                                                                         .trans(10.0, 25.0),
+                                                                     gl).unwrap();
+            text::Text::new_color([1.0, 0.0, 0.0, 1.0], 25).draw(&texty,
+                                                                     &mut glyph_cache,
+                                                                     &DrawState::default(),
+                                                                     c.transform
+                                                                         .trans(10.0, 50.0),
+                                                                     gl).unwrap();
         });
     }
-
     fn update(&mut self, upd: &UpdateArgs) {
         let widthcol = (self.width / 2.0) as f64;
         let heightcol = (self.height / 2.0) as f64;
@@ -47,6 +96,8 @@ impl Cube {
         }
         if self.player.y >= heightcol - rad {
             self.down_d = false;
+        }
+        if self.player.x <= self.trees.x {
         }
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
@@ -99,16 +150,11 @@ fn main() {
         .build()
         .unwrap();
 
-    let assets = find_folder::Search::ParentsThenKids(3, 3)
-        .for_folder("assets").unwrap();
-    println!("{:?}", assets);
-    let ref font = assets.join("FiraSans-Regular.ttf");
-    let factory = window.factory.clone();
-    let mut glyphs = Glyphs::new(font, factory, TextureSettings::new()).unwrap();
-
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
         player : Object::new(),
+        trees : Tree::new(),
+        theme : Theme::new(),
         height: 720.0,
         width: 1280.0,
         size: 50.0,
@@ -117,6 +163,7 @@ fn main() {
         left_d: false,
         right_d: false
     };
+    cube.on_load(&window);
     while let Some(e) = window.next() {
         if let Some(u) = e.update_args() {
             cube.update(&u);
@@ -127,15 +174,5 @@ fn main() {
         if let Some(i) = e.button_args() {
             cube.on_input(&i);
         }
-        window.draw_2d(&e, |c, g| {
-            let transform = c.transform.trans(10.0, 100.0);
-
-            text::Text::new_color([0.0, 1.0, 0.0, 1.0], 64).draw(
-                "Hello world!",
-                &mut glyphs,
-                &c.draw_state,
-                transform, g
-            ).unwrap();
-        });
     }
 }
