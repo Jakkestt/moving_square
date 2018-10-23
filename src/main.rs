@@ -11,6 +11,8 @@ extern crate sprite;
 
 mod object;
 mod tree;
+mod theme;
+use theme::Theme;
 use object::Object;
 use tree::Tree;
 
@@ -26,6 +28,7 @@ pub struct Cube {
     gl: GlGraphics,
     player: Object,
     trees: Tree,
+    theme: Theme,
     height: f64,
     width: f64,
     size: f64,
@@ -35,23 +38,32 @@ pub struct Cube {
 impl Cube {
     fn on_load(&mut self, w: &PistonWindow) {
         let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
-        let texture = assets.join("rust.png");
-        let texture = Texture::from_path(
-                &texture,
+        let player_sprite = assets.join("fuck.png");
+        let p1_sprite = Texture::from_path(
+                &player_sprite,
                 &TextureSettings::new())
                 .unwrap();
-        self.player.set_sprite(texture);
+        self.player.set_sprite(p1_sprite);
+        let background = assets.join("background.png");
+        let background = Texture::from_path(
+                &background,
+                &TextureSettings::new())
+                .unwrap();
+        self.theme.set_sprite(background);
     }
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
         let fuck_trees = &self.trees;
+        let fuck_theme = &self.theme;
         let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
 
         self.gl.draw(args.viewport(), |c, gl| {
             let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
-            let randomplace = c.transform.trans(300.0, 300.0);
+            fuck_theme.rendertheme(gl, center);
+            fuck_trees.moar_trees(gl, center);
+            fuck_this.render(gl, center);
             text::Text::new_color([1.0, 0.0, 0.0, 1.0], 25).draw(&textx,
                                                                      &mut glyph_cache,
                                                                      &DrawState::default(),
@@ -64,8 +76,6 @@ impl Cube {
                                                                      c.transform
                                                                          .trans(10.0, 50.0),
                                                                      gl).unwrap();
-            fuck_trees.moar_trees(gl, center);
-            fuck_this.render(gl, center);
         });
     }
     fn update(&mut self, upd: &UpdateArgs) {
@@ -85,7 +95,6 @@ impl Cube {
             self.down_d = false;
         }
         if self.player.x <= self.trees.x {
-            self.left_d = false;
         }
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
@@ -144,6 +153,7 @@ fn main() {
         gl: GlGraphics::new(opengl),
         player : Object::new(),
         trees : Tree::new(),
+        theme : Theme::new(),
         height: 720.0,
         width: 1280.0,
         size: 50.0,
