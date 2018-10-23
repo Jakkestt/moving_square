@@ -1,9 +1,8 @@
 use piston_window::*;
-use opengl_graphics::{ GlGraphics, OpenGL, Texture };
+use opengl_graphics::{ GlGraphics, Texture };
 use rand::prelude::*;
 
 pub struct Tree {
-    gl: GlGraphics,
     pub x: f64,
     pub y: f64,
     sprite: Option<Texture>
@@ -12,9 +11,8 @@ pub struct Tree {
 #[allow(dead_code)]
 impl Tree {
     pub fn new() -> Tree {
-        let opengl = OpenGL::V3_2;
         let mut rng = thread_rng();
-        Tree {gl: GlGraphics::new(opengl), x: rng.gen_range(-600.0, 600.0), y: rng.gen_range(-300.0, 300.0), sprite: None}
+        Tree {x: rng.gen_range(-600.0, 600.0), y: rng.gen_range(-300.0, 300.0), sprite: None}
     }
     pub fn moar_trees(&self, gl: &mut GlGraphics, view: math::Matrix2d) {
         let tree = rectangle::square(0.0, 0.0, 300.0);

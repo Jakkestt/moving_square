@@ -20,9 +20,6 @@ use piston::window::WindowSettings;
 use piston::input::*;
 use piston_window::*;
 use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache, Texture };
-use std::path::Path;
-use std::rc::Rc;
-use std::borrow::BorrowMut;
 
 pub struct Cube {
     gl: GlGraphics,
@@ -153,8 +150,6 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut gl = GlGraphics::new(opengl);
-
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
         player : Object::new(),
@@ -170,7 +165,6 @@ fn main() {
     };
     cube.on_load(&window);
     while let Some(e) = window.next() {
-        use graphics::*;
         if let Some(u) = e.update_args() {
             cube.update(&u);
         }

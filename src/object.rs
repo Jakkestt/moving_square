@@ -1,9 +1,7 @@
 use piston_window::*;
-use opengl_graphics::{ GlGraphics, OpenGL, Texture };
-use std::path::Path;
+use opengl_graphics::{ GlGraphics, Texture };
 
 pub struct Object {
-    gl: GlGraphics,
     pub x: f64,
     pub y: f64,
     sprite: Option<Texture>
@@ -13,8 +11,7 @@ pub struct Object {
 #[allow(dead_code)]
 impl Object {
     pub fn new() -> Object {
-        let opengl = OpenGL::V3_2;
-        Object {gl: GlGraphics::new(opengl), x : 0.0, y : 0.0, sprite: None}
+        Object {x : 0.0, y : 0.0, sprite: None}
     }
     pub fn mov(&mut self, x: f64, y: f64) {
         self.x += x;
