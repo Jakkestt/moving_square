@@ -33,7 +33,7 @@ pub struct Cube {
 }
 
 impl Cube {
-    fn on_load(&mut self, w: &PistonWindow) {
+    fn on_load(&mut self, _w: &PistonWindow) {
         let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
         let player_sprite = assets.join("fuck.png");
         let p1_sprite = Texture::from_path(
