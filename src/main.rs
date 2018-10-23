@@ -50,6 +50,12 @@ impl Cube {
                 &TextureSettings::new())
                 .unwrap();
         self.theme.set_sprite(background);
+        let tree = assets.join("Tree.png");
+        let tree = Texture::from_path(
+                    &tree,
+                    &TextureSettings::new())
+                    .unwrap();
+        self.trees.set_sprite(tree);
     }
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
