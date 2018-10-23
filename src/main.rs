@@ -17,7 +17,7 @@ use tree::Tree;
 use piston::window::WindowSettings;
 use piston::input::*;
 use piston_window::*;
-use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache };
+use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache, Texture };
 use std::path::Path;
 use std::rc::Rc;
 use std::borrow::BorrowMut;
@@ -37,9 +37,7 @@ impl Cube {
         let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
         let texture = assets.join("rust.png");
         let texture = Texture::from_path(
-                &mut *w.factory.borrow_mut(),
                 &texture,
-                Flip::None,
                 &TextureSettings::new())
                 .unwrap();
         self.player.set_sprite(texture);
@@ -141,7 +139,7 @@ fn main() {
         .unwrap();
 
     let mut gl = GlGraphics::new(opengl);
-    
+
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
         player : Object::new(),

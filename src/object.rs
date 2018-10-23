@@ -1,11 +1,11 @@
 use piston_window::*;
-use opengl_graphics::{ GlGraphics, OpenGL, Resources };
+use opengl_graphics::{ GlGraphics, OpenGL, Texture };
 use std::path::Path;
 
 pub struct Object {
     pub x: f64,
     pub y: f64,
-    sprite: Option<Texture<Resources>>
+    sprite: Option<Texture>
 }
 
 
@@ -34,7 +34,7 @@ impl Object {
             }
         }
     }
-    pub fn set_sprite(&mut self, sprite: Texture<Resources>) {
+    pub fn set_sprite(&mut self, sprite: Texture) {
         self.sprite = Some(sprite);
     }
 }
