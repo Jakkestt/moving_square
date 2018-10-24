@@ -3,6 +3,7 @@ extern crate piston;
 extern crate graphics;
 extern crate opengl_graphics;
 extern crate find_folder;
+extern crate image;
 extern crate gfx_device_gl;
 extern crate gfx_graphics;
 extern crate gfx;
@@ -16,6 +17,7 @@ use theme::Theme;
 use object::Object;
 use tree::Tree;
 
+use std::path::Path;
 use piston::window::WindowSettings;
 use piston::input::*;
 use piston_window::*;
@@ -34,22 +36,17 @@ pub struct Cube {
 
 impl Cube {
     fn on_load(&mut self, _w: &PistonWindow) {
-        let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
-        let player_sprite = assets.join("fuck.png");
         let p1_sprite = Texture::from_path(
-                &player_sprite,
-                &TextureSettings::new())
-                .unwrap();
+                &Path::new("./assets/fuck.png"),
+                &TextureSettings::new()).unwrap();
         self.player.set_sprite(p1_sprite);
-        let background = assets.join("background.png");
         let background = Texture::from_path(
-                &background,
+                &Path::new("./assets/background.png"),
                 &TextureSettings::new())
                 .unwrap();
         self.theme.set_sprite(background);
-        let tree = assets.join("Tree.png");
         let tree = Texture::from_path(
-                    &tree,
+                    &Path::new("./assets/Tree.png"),
                     &TextureSettings::new())
                     .unwrap();
         self.trees.set_sprite(tree);
