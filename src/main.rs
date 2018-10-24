@@ -61,6 +61,7 @@ impl Cube {
 
         self.gl.draw(args.viewport(), |c, gl| {
             let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
+            clear([0.0, 0.0, 0.0, 0.0], gl);
             fuck_theme.rendertheme(gl, center);
             fuck_trees.moar_trees(gl, center);
             fuck_this.render(gl, center);
@@ -140,8 +141,11 @@ impl Cube {
 
 fn main() {
     let opengl = OpenGL::V3_2;
+    let width = 720;
+    let height = 1280;
 
-    let mut window: PistonWindow = WindowSettings::new("Welcome to the bonezone", (1280, 720))
+
+    let mut window: PistonWindow = WindowSettings::new("Welcome to the bonezone", (height, width))
         .opengl(opengl)
         .exit_on_esc(true)
         .build()
