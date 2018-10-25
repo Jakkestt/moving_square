@@ -59,7 +59,8 @@ impl Cube {
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
 
-        self.gl.draw(args.viewport(), |c, gl| {
+        let viewport = args.viewport();
+        self.gl.draw([0, 0, args.width as i32, args.height as i32], |c, gl| {
             let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
             clear([0.0, 0.0, 0.0, 0.0], gl);
             fuck_theme.rendertheme(gl, center);
@@ -80,23 +81,7 @@ impl Cube {
         });
     }
     fn update(&mut self, upd: &UpdateArgs) {
-        let widthcol = (self.width / 2.0) as f64;
-        let heightcol = (self.height / 2.0) as f64;
         let rad = (self.size / 2.0) as f64;
-        if self.player.x <= -widthcol + rad {
-            self.left_d = false;
-        }
-        if self.player.x >= widthcol - rad {
-            self.right_d = false;
-        }
-        if self.player.y <= -heightcol + rad {
-            self.up_d = false;
-        }
-        if self.player.y >= heightcol - rad {
-            self.down_d = false;
-        }
-        if self.player.x <= self.trees.x {
-        }
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
         }
@@ -141,11 +126,9 @@ impl Cube {
 
 fn main() {
     let opengl = OpenGL::V3_2;
-    let width = 720;
-    let height = 1280;
-
-
-    let mut window: PistonWindow = WindowSettings::new("Welcome to the bonezone", (height, width))
+    let width = 800;
+    let height = 600;
+    let mut window: PistonWindow = WindowSettings::new("Welcome to the bonezone", (width, height))
         .opengl(opengl)
         .exit_on_esc(true)
         .build()
@@ -156,8 +139,8 @@ fn main() {
         player : Object::new(),
         trees : Tree::new(),
         theme : Theme::new(),
-        height: 720.0,
-        width: 1280.0,
+        height: height as f64,
+        width: width as f64,
         size: 50.0,
         up_d: false,
         down_d: false,
