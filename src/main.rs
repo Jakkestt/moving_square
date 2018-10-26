@@ -28,8 +28,14 @@ pub struct Cube {
     player: Object,
     trees: Tree,
     theme: Theme,
-    height: f64,
+    fuckx: i32,
+    fucky: i32,
+    map_width: i32,
+    map_height: i32,
     width: f64,
+    height: f64,
+    draw_height: f64,
+    draw_width: f64,
     size: f64,
     up_d: bool, down_d: bool, left_d: bool, right_d: bool
 }
@@ -55,13 +61,18 @@ impl Cube {
         let fuck_this = &self.player;
         let fuck_trees = &self.trees;
         let fuck_theme = &self.theme;
+        let fuck_width = &self.width;
+        let fuck_height = &self.height;
         let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
-
-        let viewport = args.viewport();
-        self.gl.draw([0, 0, args.width as i32, args.height as i32], |c, gl| {
-            let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
+        let viewport = Viewport {
+            rect: [self.fuckx, self.fucky, self.map_width, self.map_height],
+            window_size: [self.width as u32, self.height as u32],
+            draw_size: [self.draw_width as u32, self.draw_height as u32],
+        };
+        self.gl.draw(viewport, |c, gl| {
+            let center = c.transform.trans((fuck_width / 2.0) as f64, (fuck_height / 2.0) as f64);
             clear([0.0, 0.0, 0.0, 0.0], gl);
             fuck_theme.rendertheme(gl, center);
             fuck_trees.moar_trees(gl, center);
@@ -81,7 +92,19 @@ impl Cube {
         });
     }
     fn update(&mut self, upd: &UpdateArgs) {
+        let widthcol = (self.draw_width / 2.0) as f64;
         let rad = (self.size / 2.0) as f64;
+        if self.player.x <= -widthcol + 100.0 {
+            if self.left_d == true {
+                self.fuckx = -self.player.x as i32 - 300;
+            }
+        }
+        if self.player.x >= 300.0 {
+            if self.right_d == true {
+                self.fuckx = -self.player.x as i32 + 300;
+                self.map_width += -500;
+            }
+        }
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
         }
@@ -129,6 +152,7 @@ fn main() {
     let width = 800;
     let height = 600;
     let mut window: PistonWindow = WindowSettings::new("Welcome to the bonezone", (width, height))
+        .fullscreen(false)
         .opengl(opengl)
         .exit_on_esc(true)
         .build()
@@ -139,8 +163,14 @@ fn main() {
         player : Object::new(),
         trees : Tree::new(),
         theme : Theme::new(),
-        height: height as f64,
+        fuckx: 0,
+        fucky: 0,
         width: width as f64,
+        height: height as f64,
+        draw_height: height as f64,
+        draw_width: width as f64,
+        map_width: 800,
+        map_height: 600,
         size: 50.0,
         up_d: false,
         down_d: false,
