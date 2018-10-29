@@ -61,20 +61,18 @@ impl Cube {
         let fuck_theme = &self.theme;
         let fuck_width = &self.map_width;
         let fuck_height = &self.map_height;
-        let fuckx = -(self.player.x) as i32;
-        let fucky = (self.player.y) as i32;
-        let jonne = (self.map_width / 2) as i32;
-        let homo = (self.map_height / 2) as i32;
+        let jonne = (self.map_width) as f64;
+        let homo = (self.map_height) as f64;
         let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
         let viewport = Viewport {
-            rect: [fuckx + jonne, fucky + homo, self.map_width, self.map_height],
+            rect: [-self.player.x as i32, self.player.y as i32, jonne as i32, homo as i32],
             window_size: [800, 600],
             draw_size: [800, 600],
         };
         self.gl.draw(viewport, |c, gl| {
-            let center = c.transform.trans((fuck_width / 2) as f64, (fuck_height / 2) as f64);
+            let center = c.transform.trans((homo / 2.0) as f64, (jonne / 2.0) as f64);
             clear([0.0, 1.0, 0.0, 0.0], gl);
             fuck_theme.rendertheme(gl, center);
             fuck_trees.moar_trees(gl, center);
