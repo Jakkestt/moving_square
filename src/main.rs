@@ -28,8 +28,6 @@ pub struct Cube {
     player: Object,
     trees: Tree,
     theme: Theme,
-    fuckx: i32,
-    fucky: i32,
     map_width: i32,
     map_height: i32,
     width: f64,
@@ -61,19 +59,23 @@ impl Cube {
         let fuck_this = &self.player;
         let fuck_trees = &self.trees;
         let fuck_theme = &self.theme;
-        let fuck_width = &self.width;
-        let fuck_height = &self.height;
+        let fuck_width = &self.map_width;
+        let fuck_height = &self.map_height;
+        let fuckx = -(self.player.x) as i32;
+        let fucky = (self.player.y) as i32;
+        let jonne = (self.map_width / 2) as i32;
+        let homo = (self.map_height / 2) as i32;
         let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
         let viewport = Viewport {
-            rect: [self.fuckx, self.fucky, self.map_width, self.map_height],
-            window_size: [self.width as u32, self.height as u32],
-            draw_size: [self.draw_width as u32, self.draw_height as u32],
+            rect: [fuckx + jonne, fucky + homo, self.map_width, self.map_height],
+            window_size: [800, 600],
+            draw_size: [800, 600],
         };
         self.gl.draw(viewport, |c, gl| {
-            let center = c.transform.trans((fuck_width / 2.0) as f64, (fuck_height / 2.0) as f64);
-            clear([0.0, 0.0, 0.0, 0.0], gl);
+            let center = c.transform.trans((fuck_width / 2) as f64, (fuck_height / 2) as f64);
+            clear([0.0, 1.0, 0.0, 0.0], gl);
             fuck_theme.rendertheme(gl, center);
             fuck_trees.moar_trees(gl, center);
             fuck_this.render(gl, center);
@@ -92,19 +94,7 @@ impl Cube {
         });
     }
     fn update(&mut self, upd: &UpdateArgs) {
-        let widthcol = (self.draw_width / 2.0) as f64;
         let rad = (self.size / 2.0) as f64;
-        if self.player.x <= -widthcol + 100.0 {
-            if self.left_d == true {
-                self.fuckx = -self.player.x as i32 - 300;
-            }
-        }
-        if self.player.x >= 300.0 {
-            if self.right_d == true {
-                self.fuckx = -self.player.x as i32 + 300;
-                self.map_width += -500;
-            }
-        }
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
         }
@@ -149,9 +139,11 @@ impl Cube {
 
 fn main() {
     let opengl = OpenGL::V3_2;
-    let width = 800;
-    let height = 600;
-    let mut window: PistonWindow = WindowSettings::new("Welcome to the bonezone", (width, height))
+    let width = 1280;
+    let height = 1024;
+    let draw_width = 800;
+    let draw_height = 600;
+    let mut window: PistonWindow = WindowSettings::new("Welcome to the bonezone", (800, 600))
         .fullscreen(false)
         .opengl(opengl)
         .exit_on_esc(true)
@@ -163,14 +155,12 @@ fn main() {
         player : Object::new(),
         trees : Tree::new(),
         theme : Theme::new(),
-        fuckx: 0,
-        fucky: 0,
         width: width as f64,
         height: height as f64,
-        draw_height: height as f64,
-        draw_width: width as f64,
-        map_width: 800,
-        map_height: 600,
+        draw_height: draw_height as f64,
+        draw_width: draw_width as f64,
+        map_width: 1600,
+        map_height: 1200,
         size: 50.0,
         up_d: false,
         down_d: false,
