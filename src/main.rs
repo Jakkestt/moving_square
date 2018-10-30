@@ -59,20 +59,20 @@ impl Cube {
         let fuck_this = &self.player;
         let fuck_trees = &self.trees;
         let fuck_theme = &self.theme;
-        let fuck_width = &self.map_width;
-        let fuck_height = &self.map_height;
+        let fuck_width = self.width;
+        let fuck_height = self.height;
         let jonne = (self.map_width) as f64;
         let homo = (self.map_height) as f64;
         let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
         let viewport = Viewport {
-            rect: [-self.player.x as i32, self.player.y as i32, jonne as i32, homo as i32],
+            rect: [(-jonne / 2.0) as i32, (-homo / 2.0) as i32, jonne as i32, homo as i32],
             window_size: [800, 600],
             draw_size: [800, 600],
         };
         self.gl.draw(viewport, |c, gl| {
-            let center = c.transform.trans((homo / 2.0) as f64, (jonne / 2.0) as f64);
+            let center = c.transform.trans((jonne / 2.0) as f64, (homo / 2.0) as f64);
             clear([0.0, 1.0, 0.0, 0.0], gl);
             fuck_theme.rendertheme(gl, center);
             fuck_trees.moar_trees(gl, center);
@@ -137,10 +137,10 @@ impl Cube {
 
 fn main() {
     let opengl = OpenGL::V3_2;
-    let width = 1280;
-    let height = 1024;
-    let draw_width = 800;
-    let draw_height = 600;
+    let width = 800;
+    let height = 600;
+    let draw_width = 3200;
+    let draw_height = 2400;
     let mut window: PistonWindow = WindowSettings::new("Welcome to the bonezone", (800, 600))
         .fullscreen(false)
         .opengl(opengl)
@@ -157,8 +157,8 @@ fn main() {
         height: height as f64,
         draw_height: draw_height as f64,
         draw_width: draw_width as f64,
-        map_width: 1600,
-        map_height: 1200,
+        map_width: 3200,
+        map_height: 2400,
         size: 50.0,
         up_d: false,
         down_d: false,
