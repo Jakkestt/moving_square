@@ -67,12 +67,12 @@ impl Cube {
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
         let viewport = Viewport {
-            rect: [(-jonne / 2.0) as i32, (-homo / 2.0) as i32, jonne as i32, homo as i32],
+            rect: [(0.0 - self.player.x) as i32, (0.0 + self.player.y) as i32, jonne as i32, homo as i32],
             window_size: [800, 600],
             draw_size: [800, 600],
         };
         self.gl.draw(viewport, |c, gl| {
-            let center = c.transform.trans((jonne / 2.0) as f64, (homo / 2.0) as f64);
+            let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
             clear([0.0, 1.0, 0.0, 0.0], gl);
             fuck_theme.rendertheme(gl, center);
             fuck_trees.moar_trees(gl, center);
@@ -157,8 +157,8 @@ fn main() {
         height: height as f64,
         draw_height: draw_height as f64,
         draw_width: draw_width as f64,
-        map_width: 3200,
-        map_height: 2400,
+        map_width: 800,
+        map_height: 600,
         size: 50.0,
         up_d: false,
         down_d: false,
