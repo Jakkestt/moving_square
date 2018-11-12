@@ -31,6 +31,8 @@ pub struct Cube {
     theme: Theme,
     width: f64,
     height: f64,
+    viewx: f64,
+    viewy: f64,
     size: f64,
     up_d: bool, down_d: bool, left_d: bool, right_d: bool
 }
@@ -95,8 +97,8 @@ impl Cube {
         if self.right_d {
             self.player.mov(500.0 * upd.dt, 0.0);
         }
-        self.width = 800.0 - self.player.x * 2.;
-        self.height = 600.0 - self.player.y * 2.;
+        self.width = self.viewx - self.player.x * 2.;
+        self.height = self.viewy - self.player.y * 2.;
     }
     fn on_input(&mut self, button_args: &ButtonArgs) {
         match button_args.state {
@@ -145,6 +147,8 @@ fn main() {
         theme : Theme::new(),
         width: width as f64,
         height: height as f64,
+        viewx: width as f64,
+        viewy: height as f64,
         size: 50.0,
         up_d: false,
         down_d: false,
