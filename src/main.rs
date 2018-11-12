@@ -82,7 +82,7 @@ impl Cube {
         });
     }
     fn update(&mut self, upd: &UpdateArgs) {
-        let rad = (self.size / 2.0) as f64;
+        let _rad = (self.size / 2.0) as f64;
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
         }
@@ -95,8 +95,8 @@ impl Cube {
         if self.right_d {
             self.player.mov(500.0 * upd.dt, 0.0);
         }
-        self.width = 800.0 - self.player.x;
-        self.height = 600.0 - self.player.y;
+        self.width = 800.0 - self.player.x * 2.;
+        self.height = 600.0 - self.player.y * 2.;
     }
     fn on_input(&mut self, button_args: &ButtonArgs) {
         match button_args.state {
