@@ -12,7 +12,7 @@ pub struct Tree {
 impl Tree {
     pub fn new() -> Tree {
         let mut rng = thread_rng();
-        Tree {x: 0.0, y: 800.0, sprite: None}
+        Tree {x: rng.gen_range(-600.0, 600.0), y: rng.gen_range(-300.0, 300.0), sprite: None}
     }
     pub fn moar_trees(&self, gl: &mut GlGraphics, view: math::Matrix2d) {
         let tree = rectangle::square(0.0, 0.0, 300.0);

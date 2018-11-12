@@ -29,12 +29,8 @@ pub struct Cube {
     player: Object,
     trees: Tree,
     theme: Theme,
-    map_width: i32,
-    map_height: i32,
     width: f64,
     height: f64,
-    draw_height: f64,
-    draw_width: f64,
     size: f64,
     up_d: bool, down_d: bool, left_d: bool, right_d: bool
 }
@@ -60,16 +56,12 @@ impl Cube {
         let fuck_this = &self.player;
         let fuck_trees = &self.trees;
         let fuck_theme = &self.theme;
-        let fuck_width = self.width;
-        let fuck_height = self.height;
-        let jonne = (self.map_width) as f64;
-        let homo = (self.map_height) as f64;
         let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
         let (w, h) = (self.width, self.height);
         self.gl.draw(args.viewport(), |c, gl| {
-            let view = c.transform.trans(w, h);
+            let _view = c.transform.trans(w, h);
             let center = c.transform.trans(w / 2.0, h / 2.0);
             clear([0.0, 1.0, 0.0, 0.0], gl);
             fuck_theme.rendertheme(gl, center);
@@ -139,9 +131,7 @@ fn main() {
     let opengl = OpenGL::V3_2;
     let width = 800;
     let height = 600;
-    let draw_width = 3200;
-    let draw_height = 2400;
-    let mut window: PistonWindow = WindowSettings::new("Welcome to the bonezone", (800, 600))
+    let mut window: PistonWindow = WindowSettings::new("Welcome to the bonezone", (width, height))
         .fullscreen(false)
         .opengl(opengl)
         .exit_on_esc(true)
@@ -155,10 +145,6 @@ fn main() {
         theme : Theme::new(),
         width: width as f64,
         height: height as f64,
-        draw_height: draw_height as f64,
-        draw_width: draw_width as f64,
-        map_width: 800,
-        map_height: 600,
         size: 50.0,
         up_d: false,
         down_d: false,
