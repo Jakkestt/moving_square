@@ -3,11 +3,13 @@ extern crate piston;
 extern crate graphics;
 extern crate opengl_graphics;
 extern crate find_folder;
+extern crate image;
 extern crate gfx_device_gl;
 extern crate gfx_graphics;
 extern crate gfx;
 extern crate rand;
 extern crate sprite;
+extern crate viewport;
 
 mod object;
 mod tree;
@@ -16,6 +18,7 @@ use theme::Theme;
 use object::Object;
 use tree::Tree;
 
+use std::path::Path;
 use piston::window::WindowSettings;
 use piston::input::*;
 use piston_window::*;
@@ -26,30 +29,25 @@ pub struct Cube {
     player: Object,
     trees: Tree,
     theme: Theme,
-    height: f64,
     width: f64,
+    height: f64,
     size: f64,
     up_d: bool, down_d: bool, left_d: bool, right_d: bool
 }
 
 impl Cube {
     fn on_load(&mut self, _w: &PistonWindow) {
-        let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
-        let player_sprite = assets.join("fuck.png");
         let p1_sprite = Texture::from_path(
-                &player_sprite,
-                &TextureSettings::new())
-                .unwrap();
+                &Path::new("./assets/fuck.png"),
+                &TextureSettings::new()).unwrap();
         self.player.set_sprite(p1_sprite);
-        let background = assets.join("background.png");
         let background = Texture::from_path(
-                &background,
+                &Path::new("./assets/background.png"),
                 &TextureSettings::new())
                 .unwrap();
         self.theme.set_sprite(background);
-        let tree = assets.join("Tree.png");
         let tree = Texture::from_path(
-                    &tree,
+                    &Path::new("./assets/Tree.png"),
                     &TextureSettings::new())
                     .unwrap();
         self.trees.set_sprite(tree);
@@ -61,9 +59,11 @@ impl Cube {
         let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
-
+        let (w, h) = (self.width, self.height);
         self.gl.draw(args.viewport(), |c, gl| {
-            let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
+            let _view = c.transform.trans(w, h);
+            let center = c.transform.trans(w / 2.0, h / 2.0);
+            clear([0.0, 1.0, 0.0, 0.0], gl);
             fuck_theme.rendertheme(gl, center);
             fuck_trees.moar_trees(gl, center);
             fuck_this.render(gl, center);
@@ -82,23 +82,7 @@ impl Cube {
         });
     }
     fn update(&mut self, upd: &UpdateArgs) {
-        let widthcol = (self.width / 2.0) as f64;
-        let heightcol = (self.height / 2.0) as f64;
-        let rad = (self.size / 2.0) as f64;
-        if self.player.x <= -widthcol + rad {
-            self.left_d = false;
-        }
-        if self.player.x >= widthcol - rad {
-            self.right_d = false;
-        }
-        if self.player.y <= -heightcol + rad {
-            self.up_d = false;
-        }
-        if self.player.y >= heightcol - rad {
-            self.down_d = false;
-        }
-        if self.player.x <= self.trees.x {
-        }
+        let _rad = (self.size / 2.0) as f64;
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
         }
@@ -111,6 +95,8 @@ impl Cube {
         if self.right_d {
             self.player.mov(500.0 * upd.dt, 0.0);
         }
+        self.width = 800.0 - self.player.x * 2.;
+        self.height = 600.0 - self.player.y * 2.;
     }
     fn on_input(&mut self, button_args: &ButtonArgs) {
         match button_args.state {
@@ -143,8 +129,10 @@ impl Cube {
 
 fn main() {
     let opengl = OpenGL::V3_2;
-
-    let mut window: PistonWindow = WindowSettings::new("Welcome to the bonezone", (1280, 720))
+    let width = 800;
+    let height = 600;
+    let mut window: PistonWindow = WindowSettings::new("Welcome to the bonezone", (width, height))
+        .fullscreen(false)
         .opengl(opengl)
         .exit_on_esc(true)
         .build()
@@ -155,8 +143,8 @@ fn main() {
         player : Object::new(),
         trees : Tree::new(),
         theme : Theme::new(),
-        height: 720.0,
-        width: 1280.0,
+        width: width as f64,
+        height: height as f64,
         size: 50.0,
         up_d: false,
         down_d: false,
