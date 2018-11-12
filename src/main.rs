@@ -9,6 +9,7 @@ extern crate gfx_graphics;
 extern crate gfx;
 extern crate rand;
 extern crate sprite;
+extern crate viewport;
 
 mod object;
 mod tree;
@@ -66,13 +67,10 @@ impl Cube {
         let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
-        let viewport = Viewport {
-            rect: [(0.0 - self.player.x) as i32, (0.0 + self.player.y) as i32, jonne as i32, homo as i32],
-            window_size: [800, 600],
-            draw_size: [800, 600],
-        };
-        self.gl.draw(viewport, |c, gl| {
-            let center = c.transform.trans((args.width / 2) as f64, (args.height / 2) as f64);
+        let (w, h) = (self.width, self.height);
+        self.gl.draw(args.viewport(), |c, gl| {
+            let view = c.transform.trans(w, h);
+            let center = c.transform.trans(w / 2.0, h / 2.0);
             clear([0.0, 1.0, 0.0, 0.0], gl);
             fuck_theme.rendertheme(gl, center);
             fuck_trees.moar_trees(gl, center);
@@ -105,6 +103,8 @@ impl Cube {
         if self.right_d {
             self.player.mov(500.0 * upd.dt, 0.0);
         }
+        self.width = 800.0 - self.player.x;
+        self.height = 600.0 - self.player.y;
     }
     fn on_input(&mut self, button_args: &ButtonArgs) {
         match button_args.state {
