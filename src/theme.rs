@@ -13,13 +13,13 @@ impl Theme {
         Theme {x : 0.0, y : 0.0, sprite: None}
     }
     pub fn rendertheme(&self, gl: &mut GlGraphics, view: math::Matrix2d) {
-        let square = rectangle::square(0.0, 0.0, 0.0);
+        let square = rectangle::square(0.0, 0.0, 64.0);
         match self.sprite {
             None => {
-                rectangle([0.0, 0.0, 0.0, 0.0], square, view.trans(self.x, self.y).trans(-25.0, -25.0), gl)
+                rectangle([0.0, 0.0, 1.0, 1.0], square, view.trans(self.x, self.y).trans(-32.0, -32.0), gl)
             }
             Some(ref sprite) => {
-                image(sprite, view.trans(self.x, self.y).trans(-1280.0 / 2.0, -720.0 / 2.0), gl)
+                image(sprite, view.trans(self.x, self.y).trans(-32.0, -32.0), gl)
             }
         }
     }

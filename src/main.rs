@@ -68,6 +68,7 @@ impl Cube {
             clear([0.0, 1.0, 0.0, 0.0], gl);
             fuck_theme.rendertheme(gl, center);
             fuck_trees.moar_trees(gl, center);
+            fuck_trees.moar_trees(gl, center);
             fuck_this.render(gl, center);
             text::Text::new_color([1.0, 0.0, 0.0, 1.0], 25).draw(&textx,
                                                                      &mut glyph_cache,
@@ -97,8 +98,13 @@ impl Cube {
         if self.right_d {
             self.player.mov(500.0 * upd.dt, 0.0);
         }
+<<<<<<< HEAD
         self.width = self.viewx - self.player.x * 2.;
         self.height = self.viewy - self.player.y * 2.;
+=======
+        self.width = self.viewx - self.player.x * 2.0;
+        self.height = self.viewy - self.player.y * 2.0;
+>>>>>>> 8af475fbf5c82eab48df592bec104b407fad6dfd
     }
     fn on_input(&mut self, button_args: &ButtonArgs) {
         match button_args.state {
