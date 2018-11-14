@@ -1,18 +1,18 @@
 use piston_window::*;
 use opengl_graphics::{ GlGraphics, Texture };
 
-pub struct Theme {
+pub struct Lawn {
     pub x: f64,
     pub y: f64,
     sprite: Option<Texture>
 }
 
 #[allow(dead_code)]
-impl Theme {
-    pub fn new() -> Theme {
-        Theme {x : 0.0, y : 0.0, sprite: None}
+impl Lawn {
+    pub fn new(i: usize) -> Lawn {
+        Lawn {x : (i as f64) * 100.0, y : (i as f64) * 100.0, sprite: None}
     }
-    pub fn rendertheme(&self, gl: &mut GlGraphics, view: math::Matrix2d) {
+    pub fn renderterrain(&self, gl: &mut GlGraphics, view: math::Matrix2d) {
         let square = rectangle::square(0.0, 0.0, 64.0);
         match self.sprite {
             None => {

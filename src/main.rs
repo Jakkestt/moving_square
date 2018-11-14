@@ -14,7 +14,7 @@ extern crate viewport;
 mod object;
 mod tree;
 mod theme;
-use theme::Theme;
+use theme::Lawn;
 use object::Object;
 use tree::Tree;
 
@@ -28,7 +28,7 @@ pub struct Cube {
     gl: GlGraphics,
     player: Object,
     trees: Tree,
-    theme: Theme,
+    terrain: Vec<Lawn>,
     width: f64,
     height: f64,
     viewx: f64,
@@ -36,7 +36,6 @@ pub struct Cube {
     size: f64,
     up_d: bool, down_d: bool, left_d: bool, right_d: bool
 }
-
 impl Cube {
     fn on_load(&mut self, _w: &PistonWindow) {
         let p1_sprite = Texture::from_path(
@@ -47,7 +46,7 @@ impl Cube {
                 &Path::new("./assets/background.png"),
                 &TextureSettings::new())
                 .unwrap();
-        self.theme.set_sprite(background);
+        //self.terrain.set_sprite(background);
         let tree = Texture::from_path(
                     &Path::new("./assets/Tree.png"),
                     &TextureSettings::new())
@@ -57,7 +56,7 @@ impl Cube {
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
         let fuck_trees = &self.trees;
-        let fuck_theme = &self.theme;
+        let fuck_terrain = &self.terrain;
         let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
@@ -66,7 +65,7 @@ impl Cube {
             let _view = c.transform.trans(w, h);
             let center = c.transform.trans(w / 2.0, h / 2.0);
             clear([0.0, 1.0, 0.0, 0.0], gl);
-            fuck_theme.rendertheme(gl, center);
+            fuck_terrain.renderterrain(gl, center);
             fuck_trees.moar_trees(gl, center);
             fuck_trees.moar_trees(gl, center);
             fuck_this.render(gl, center);
@@ -98,13 +97,8 @@ impl Cube {
         if self.right_d {
             self.player.mov(500.0 * upd.dt, 0.0);
         }
-<<<<<<< HEAD
-        self.width = self.viewx - self.player.x * 2.;
-        self.height = self.viewy - self.player.y * 2.;
-=======
         self.width = self.viewx - self.player.x * 2.0;
         self.height = self.viewy - self.player.y * 2.0;
->>>>>>> 8af475fbf5c82eab48df592bec104b407fad6dfd
     }
     fn on_input(&mut self, button_args: &ButtonArgs) {
         match button_args.state {
@@ -146,11 +140,15 @@ fn main() {
         .build()
         .unwrap();
 
+    let terrain = Vec::new();
+    for i in 0 .. 3 {
+        terrain.push(Lawn::new(i));
+    }
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
         player : Object::new(),
         trees : Tree::new(),
-        theme : Theme::new(),
+        terrain,
         width: width as f64,
         height: height as f64,
         viewx: width as f64,
