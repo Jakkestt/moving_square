@@ -150,7 +150,7 @@ fn main() {
     let mut terrain = Vec::new();
     for j in 0 .. 16 {
         for i in 0 .. 16 {
-            terrain.push(Lawn::new(i));
+            terrain.push(Lawn::new(i, j));
             if i == i + 16 {
             }
         }

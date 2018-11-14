@@ -9,11 +9,8 @@ pub struct Lawn {
 
 #[allow(dead_code)]
 impl Lawn {
-    pub fn new(&mut self, i:usize) -> Lawn {
-        if i == i + 16 {
-            self.x = 64.0;
-        }
-        Lawn {x : (i as f64) * 0.0, y : (i as f64) * -64.0, sprite: None}
+    pub fn new(i:usize, j:usize) -> Lawn {
+        Lawn {x : (j as f64) * 64.0, y : (i as f64) * -64.0, sprite: None}
     }
     pub fn renderterrain(&self, gl: &mut GlGraphics, view: math::Matrix2d) {
         let square = rectangle::square(0.0, 0.0, 64.0);
