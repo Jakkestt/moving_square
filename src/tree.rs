@@ -10,9 +10,9 @@ pub struct Tree {
 
 #[allow(dead_code)]
 impl Tree {
-    pub fn new() -> Tree {
+    pub fn new(i:usize) -> Tree {
         let mut rng = thread_rng();
-        Tree {x: rng.gen_range(-600.0, 600.0), y: rng.gen_range(-300.0, 300.0), sprite: None}
+        Tree {x: (i as f64) * rng.gen_range(-600.0, 600.0), y: (i as f64) * rng.gen_range(-300.0, 300.0), sprite: None}
     }
     pub fn moar_trees(&self, gl: &mut GlGraphics, view: math::Matrix2d) {
         let tree = rectangle::square(0.0, 0.0, 64.0);

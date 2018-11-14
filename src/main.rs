@@ -27,7 +27,7 @@ use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache, Texture };
 pub struct Cube {
     gl: GlGraphics,
     player: Object,
-    trees: Tree,
+    trees: Vec<Tree>,
     terrain: Vec<Lawn>,
     width: f64,
     height: f64,
@@ -42,16 +42,20 @@ impl Cube {
                 &Path::new("./assets/fuck.png"),
                 &TextureSettings::new()).unwrap();
         self.player.set_sprite(p1_sprite);
-        let background = Texture::from_path(
-                &Path::new("./assets/background.png"),
-                &TextureSettings::new())
-                .unwrap();
-        //self.terrain.set_sprite(background);
-        let tree = Texture::from_path(
-                    &Path::new("./assets/Tree.png"),
+        for lawn in &mut self.terrain {
+            let background = Texture::from_path(
+                    &Path::new("./assets/background.png"),
                     &TextureSettings::new())
                     .unwrap();
-        self.trees.set_sprite(tree);
+            lawn.set_sprite(background);
+        }
+        for tree in &mut self.trees {
+            let treeimg = Texture::from_path(
+                        &Path::new("./assets/Tree.png"),
+                        &TextureSettings::new())
+                        .unwrap();
+            tree.set_sprite(treeimg);
+        }
     }
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
@@ -65,9 +69,12 @@ impl Cube {
             let _view = c.transform.trans(w, h);
             let center = c.transform.trans(w / 2.0, h / 2.0);
             clear([0.0, 1.0, 0.0, 0.0], gl);
-            fuck_terrain.renderterrain(gl, center);
-            fuck_trees.moar_trees(gl, center);
-            fuck_trees.moar_trees(gl, center);
+            for lawn in fuck_terrain {
+                lawn.renderterrain(gl, center);
+            }
+            for tree in fuck_trees {
+                tree.moar_trees(gl, center);
+            }
             fuck_this.render(gl, center);
             text::Text::new_color([1.0, 0.0, 0.0, 1.0], 25).draw(&textx,
                                                                      &mut glyph_cache,
@@ -140,14 +147,22 @@ fn main() {
         .build()
         .unwrap();
 
-    let terrain = Vec::new();
-    for i in 0 .. 3 {
-        terrain.push(Lawn::new(i));
+    let mut terrain = Vec::new();
+    for j in 0 .. 16 {
+        for i in 0 .. 16 {
+            terrain.push(Lawn::new(i));
+            if i == i + 16 {
+            }
+        }
+    }
+    let mut trees = Vec::new();
+    for f in 0 .. 10 {
+        trees.push(Tree::new(f));
     }
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
         player : Object::new(),
-        trees : Tree::new(),
+        trees,
         terrain,
         width: width as f64,
         height: height as f64,
