@@ -147,17 +147,13 @@ fn main() {
         .build()
         .unwrap();
 
+    let mut trees = Vec::new();
     let mut terrain = Vec::new();
     for j in 0 .. 16 {
         for i in 0 .. 16 {
             terrain.push(Lawn::new(i, j));
-            if i == i + 16 {
-            }
+            trees.push(Tree::new(i))
         }
-    }
-    let mut trees = Vec::new();
-    for f in 0 .. 10 {
-        trees.push(Tree::new(f));
     }
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
