@@ -106,6 +106,14 @@ impl Cube {
         }
         self.width = self.viewx - self.player.x * 2.0;
         self.height = self.viewy - self.player.y * 2.0;
+        if self.player.x == 0.0 {
+            for j in 0 .. 16 {
+                for i in 0 .. 16 {
+                    self.terrain.push(Lawn::new(i, j));
+                    //self.trees.push(Tree::new(i))
+                }
+            }
+        }
     }
     fn on_input(&mut self, button_args: &ButtonArgs) {
         match button_args.state {
@@ -146,20 +154,12 @@ fn main() {
         .exit_on_esc(true)
         .build()
         .unwrap();
-
-    let mut trees = Vec::new();
-    let mut terrain = Vec::new();
-    for j in 0 .. 16 {
-        for i in 0 .. 16 {
-            terrain.push(Lawn::new(i, j));
-            trees.push(Tree::new(i))
-        }
-    }
+        
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
         player : Object::new(),
-        trees,
-        terrain,
+        trees : Vec::new(),
+        terrain : Vec::new(),
         width: width as f64,
         height: height as f64,
         viewx: width as f64,

@@ -16,10 +16,10 @@ impl Lawn {
         let square = rectangle::square(0.0, 0.0, 64.0);
         match self.sprite {
             None => {
-                rectangle([0.0, 0.0, 1.0, 1.0], square, view.trans(self.x, self.y).trans(-32.0, -32.0), gl)
+                rectangle([0.0, 0.0, 0.0, 1.0], square, view.trans(self.x, self.y).trans(-512.0, 512.0), gl)
             }
             Some(ref sprite) => {
-                image(sprite, view.trans(self.x, self.y).trans(-32.0, -32.0), gl)
+                image(sprite, view.trans(self.x, self.y).trans(-512.0, 512.0), gl)
             }
         }
     }
