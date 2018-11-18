@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(Windows) Launch",
+            "name": "Fuck off",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/target/debug/moving_square.exe",
@@ -13,7 +13,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false
+            "externalConsole": true 
         }
     ]
 }
