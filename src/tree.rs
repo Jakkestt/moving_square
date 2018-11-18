@@ -1,4 +1,4 @@
-use piston_window::*;
+use piston_window::{TextureSettings, Transformed, image, math};
 use opengl_graphics::{ GlGraphics, Texture };
 use rand::prelude::{Rng, thread_rng};
 use std::path::Path;
@@ -11,7 +11,7 @@ pub struct Tree {
 
 #[allow(dead_code)]
 impl Tree {
-    pub fn new(i:usize) -> Tree {
+    pub fn new(i:i32) -> Tree {
         let mut rng = thread_rng();
         let treeimg = Texture::from_path(
                         &Path::new("./assets/Tree.png"),

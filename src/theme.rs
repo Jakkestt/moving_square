@@ -1,4 +1,4 @@
-use piston_window::*;
+use piston_window::{TextureSettings, Transformed, image, math};
 use opengl_graphics::{ GlGraphics, Texture };
 use std::path::Path;
 
@@ -10,7 +10,7 @@ pub struct Lawn {
 
 #[allow(dead_code)]
 impl Lawn {
-    pub fn new(i:usize, j:usize) -> Lawn {
+    pub fn new(i:i32, j:i32) -> Lawn {
         let background = Texture::from_path(
                     &Path::new("./assets/background.png"),
                     &TextureSettings::new())

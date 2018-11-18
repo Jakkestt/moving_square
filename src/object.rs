@@ -1,4 +1,4 @@
-use piston_window::*;
+use piston_window::{TextureSettings, Transformed, image, math};
 use opengl_graphics::{ GlGraphics, Texture };
 use std::path::Path;
 

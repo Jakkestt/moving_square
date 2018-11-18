@@ -32,10 +32,17 @@ pub struct Cube {
     height: f64,
     viewx: f64,
     viewy: f64,
-    size: f64,
     up_d: bool, down_d: bool, left_d: bool, right_d: bool
 }
 impl Cube {
+    fn on_load(&mut self) {
+        for j in 0 .. 16 {
+            for i in 0 .. 16 {
+                self.terrain.push(Lawn::new(i, j));
+                self.trees.push(Tree::new(i));
+            }
+        }
+    }
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
         let fuck_trees = &self.trees;
@@ -70,7 +77,6 @@ impl Cube {
         });
     }
     fn update(&mut self, upd: &UpdateArgs) {
-        let _rad = (self.size / 2.0) as f64;
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
         }
@@ -85,12 +91,6 @@ impl Cube {
         }
         self.width = self.viewx - self.player.x * 2.0;
         self.height = self.viewy - self.player.y * 2.0;
-        for j in 0 .. 16 {
-            for i in 0 .. 16 {
-                self.terrain.push(Lawn::new(i, j));
-                self.trees.push(Tree::new(i));
-            }
-        }
     }
     fn on_input(&mut self, button_args: &ButtonArgs) {
         match button_args.state {
@@ -141,12 +141,12 @@ fn main() {
         height: height as f64,
         viewx: width as f64,
         viewy: height as f64,
-        size: 50.0,
         up_d: false,
         down_d: false,
         left_d: false,
         right_d: false
     };
+    cube.on_load();
     while let Some(e) = window.next() {
         if let Some(u) = e.update_args() {
             cube.update(&u);
