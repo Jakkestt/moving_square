@@ -18,11 +18,10 @@ use theme::Lawn;
 use object::Object;
 use tree::Tree;
 
-use std::path::Path;
 use piston::window::WindowSettings;
 use piston::input::*;
 use piston_window::*;
-use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache, Texture };
+use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache };
 
 pub struct Cube {
     gl: GlGraphics,
@@ -37,26 +36,6 @@ pub struct Cube {
     up_d: bool, down_d: bool, left_d: bool, right_d: bool
 }
 impl Cube {
-    fn on_load(&mut self, _w: &PistonWindow) {
-        let p1_sprite = Texture::from_path(
-                &Path::new("./assets/fuck.png"),
-                &TextureSettings::new()).unwrap();
-        self.player.set_sprite(p1_sprite);
-        for lawn in &mut self.terrain {
-            let background = Texture::from_path(
-                    &Path::new("./assets/background.png"),
-                    &TextureSettings::new())
-                    .unwrap();
-            lawn.set_sprite(background);
-        }
-        for tree in &mut self.trees {
-            let treeimg = Texture::from_path(
-                        &Path::new("./assets/Tree.png"),
-                        &TextureSettings::new())
-                        .unwrap();
-            tree.set_sprite(treeimg);
-        }
-    }
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
         let fuck_trees = &self.trees;
@@ -106,14 +85,6 @@ impl Cube {
         }
         self.width = self.viewx - self.player.x * 2.0;
         self.height = self.viewy - self.player.y * 2.0;
-        if self.player.x == 0.0 {
-            for j in 0 .. 16 {
-                for i in 0 .. 16 {
-                    self.terrain.push(Lawn::new(i, j));
-                    //self.trees.push(Tree::new(i))
-                }
-            }
-        }
     }
     fn on_input(&mut self, button_args: &ButtonArgs) {
         match button_args.state {
@@ -170,7 +141,6 @@ fn main() {
         left_d: false,
         right_d: false
     };
-    cube.on_load(&window);
     while let Some(e) = window.next() {
         if let Some(u) = e.update_args() {
             cube.update(&u);
