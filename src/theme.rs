@@ -15,9 +15,9 @@ impl Lawn {
                     &Path::new("./assets/background.png"),
                     &TextureSettings::new())
                     .unwrap();
-        Lawn {x : (j as f64) * 64.0, y : (i as f64) * -64.0, sprite: background}
+        Lawn {x : (j as f64) * 16.0, y : (i as f64) * -16.0, sprite: background}
     }
     pub fn renderterrain(&self, gl: &mut GlGraphics, view: math::Matrix2d) {
-        image(&self.sprite, view.trans(self.x, self.y).trans(-512.0, 512.0), gl)
+        image(&self.sprite, view.trans(self.x, self.y).trans(-256.0 / 2.0, 256.0 / 2.0), gl)
     }
 }

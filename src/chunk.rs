@@ -10,7 +10,7 @@ pub struct Chunk {
 #[allow(dead_code)]
 impl Chunk {
     pub fn new() -> Chunk {
-        Chunk {CHUNK_SIZE_X : 16, CHUNK_SIZE_Y : 16, CHUNK_AMOUNT_X : 5, CHUNK_AMOUNT_Y : 5, CHUNK_X, CHUNK_Y}
+        Chunk {CHUNK_X, CHUNK_Y, CHUNK_SIZE_X : 16, CHUNK_SIZE_Y : 16, CHUNK_AMOUNT_X : 5, CHUNK_AMOUNT_Y : 5}
     }
     pub fn checkChunks(&mut self) {
         let player_chunk_x = self.player.x/self.CHUNK_SIZE_X;
