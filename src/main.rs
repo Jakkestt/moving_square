@@ -41,18 +41,26 @@ pub struct Cube {
     up_d: bool, down_d: bool, left_d: bool, right_d: bool
 }
 impl Cube {
-    pub fn check_chunks(&mut self) {
+    pub fn check_chunks(&mut self, upd: &UpdateArgs) {
         let player_chunk_x = self.player.x/self.chunk_size_x;
         let player_chunk_y = self.player.y/self.chunk_size_y;
-        println!("{}", player_chunk_y, );
-        /*if self.chunk_x > player_chunk_x + (self.chunk_amount_x-1.0)/2.0 || self.chunk_x < player_chunk_x - (self.chunk_amount_x-1.0)/2.0 || self.chunk_y > player_chunk_y + (self.chunk_amount_y-1.0)/2.0 || self.chunk_y < player_chunk_y - (self.chunk_amount_y-1.0)/2.0{
+        println!("{}", player_chunk_x, );
+        if self.chunk_x > player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0 ||
+           self.chunk_x < player_chunk_x - (self.chunk_amount_x - 1.0) / 2.0 ||
+           self.chunk_y > player_chunk_y + (self.chunk_amount_y - 1.0) / 2.0 ||
+           self.chunk_y < player_chunk_y - (self.chunk_amount_y - 1.0) / 2.0 {
             println!("UNLOAD CHUNK", )
-        }*/
+        }
+        if player_chunk_x >= 8.0 {
+            for i in 1 .. 4 {
+                self.terrain.push(Lawn::new(i));
+            }
+        } 
     }
     fn on_load(&mut self) {
-        for j in 0 .. 16 {
-            for i in 0 .. 16 {
-                self.terrain.push(Lawn::new(i, j));
+        for j in 0 .. 1 {
+            for i in 0 .. 1 {
+                self.terrain.push(Lawn::new(i));
                 self.trees.push(Tree::new(i));
             }
         }
@@ -170,7 +178,7 @@ fn main() {
     while let Some(e) = window.next() {
         if let Some(u) = e.update_args() {
             cube.update(&u);
-            cube.check_chunks();
+            cube.check_chunks(&u);
         }
         if let Some(r) = e.render_args() {
             cube.on_draw(&r);
