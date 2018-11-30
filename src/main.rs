@@ -18,9 +18,10 @@ use theme::Lawn;
 use object::Object;
 use tree::Tree;
 
+use piston::event_loop::EventSettings;
 use piston::window::WindowSettings;
-use piston::input::*;
-use piston_window::*;
+use piston::input;
+use piston_window::{AdvancedWindow, Button, ButtonArgs, ButtonEvent, ButtonState, DrawState, Key, PistonWindow, RenderArgs, RenderEvent, TextureSettings, Transformed, UpdateArgs, UpdateEvent, clear, text};
 use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache };
 
 pub struct Cube {
@@ -40,8 +41,9 @@ pub struct Cube {
     chunk_y: f64,
     up_d: bool, down_d: bool, left_d: bool, right_d: bool
 }
+
 impl Cube {
-    pub fn check_chunks(&mut self, upd: &UpdateArgs) {
+    pub fn check_chunks(&mut self) {
         let player_chunk_x = self.player.x/self.chunk_size_x;
         let player_chunk_y = self.player.y/self.chunk_size_y;
         println!("{}", player_chunk_x, );
@@ -52,16 +54,16 @@ impl Cube {
             println!("UNLOAD CHUNK", )
         }
         if player_chunk_x >= 8.0 {
-            for i in 1 .. 4 {
+            for i in 1 .. 2 {
                 self.terrain.push(Lawn::new(i));
             }
-        } 
+       } 
     }
     fn on_load(&mut self) {
         for j in 0 .. 1 {
             for i in 0 .. 1 {
                 self.terrain.push(Lawn::new(i));
-                self.trees.push(Tree::new(i));
+               // self.trees.push(Tree::new(i));
             }
         }
     }
@@ -175,10 +177,17 @@ fn main() {
         right_d: false
     };
     cube.on_load();
-    while let Some(e) = window.next() {
+    let mut events = EventSettings {
+        max_fps: 15,
+        ups: 15,
+        ups_reset: 0,
+        swap_buffers: true,
+        bench_mode: true,
+        lazy: true,
+    };
+    while let Some(e) = events.next(&mut window) {
         if let Some(u) = e.update_args() {
             cube.update(&u);
-            cube.check_chunks(&u);
         }
         if let Some(r) = e.render_args() {
             cube.on_draw(&r);
