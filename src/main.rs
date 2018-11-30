@@ -21,7 +21,7 @@ use tree::Tree;
 use piston::event_loop::EventSettings;
 use piston::window::WindowSettings;
 use piston::input;
-use piston_window::{AdvancedWindow, Button, ButtonArgs, ButtonEvent, ButtonState, DrawState, Key, PistonWindow, RenderArgs, RenderEvent, TextureSettings, Transformed, UpdateArgs, UpdateEvent, clear, text};
+use piston_window::*;
 use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache };
 
 pub struct Cube {
@@ -57,7 +57,7 @@ impl Cube {
             for i in 1 .. 2 {
                 self.terrain.push(Lawn::new(i));
             }
-       } 
+       }
     }
     fn on_load(&mut self) {
         for j in 0 .. 1 {
@@ -155,7 +155,7 @@ fn main() {
         .exit_on_esc(true)
         .build()
         .unwrap();
-        
+
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
         player : Object::new(),
@@ -176,15 +176,16 @@ fn main() {
         left_d: false,
         right_d: false
     };
+
     cube.on_load();
-    let mut events = EventSettings {
-        max_fps: 15,
-        ups: 15,
+    let mut events = Events::new(EventSettings {
+        max_fps: 60,
+        ups: 60*2,
         ups_reset: 0,
         swap_buffers: true,
-        bench_mode: true,
-        lazy: true,
-    };
+        bench_mode: false,
+        lazy: false,
+    });
     while let Some(e) = events.next(&mut window) {
         if let Some(u) = e.update_args() {
             cube.update(&u);
