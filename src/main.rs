@@ -10,6 +10,8 @@ extern crate gfx;
 extern crate rand;
 extern crate sprite;
 extern crate viewport;
+extern crate fps_counter;
+#[macro_use] extern crate cfor;
 
 mod object;
 mod tree;
@@ -39,34 +41,33 @@ pub struct Cube {
 }
 
 impl Cube {
-    pub fn check_chunks(&mut self) {
+    pub fn check_chunks(&mut self, dt: f64) {
         let player_chunk_x = self.player.x/self.chunk_size_x;
         let player_chunk_y = self.player.y/self.chunk_size_y;
-        //println!("{}", player_chunk_x, );
+        println!("{} {}", player_chunk_x, player_chunk_y);
         for lawn in &self.terrain {
             if lawn.x > player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0 ||
                 lawn.x < player_chunk_x - (self.chunk_amount_x - 1.0) / 2.0 ||
                 lawn.y > player_chunk_y + (self.chunk_amount_y - 1.0) / 2.0 ||
                 lawn.y < player_chunk_y - (self.chunk_amount_y - 1.0) / 2.0 {
-                println!("UNLOAD CHUNK", )
+                //println!("UNLOAD CHUNK", )
             }
         }
-        for lawn in &self.terrain {
-            if lawn.x <= player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0 {
-                if lawn y <= player_chunk_y + (self.chunk_amount_y - 1.0) / 2.0 {
-                    println!("Fuck", )
-                }
-            }
-        }
+        cfor!{let mut i = player_chunk_x - (self.chunk_amount_x - 1.0) / 2.0; i <= player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0; i += 1.0; {
+            cfor!{let mut j = player_chunk_y - (self.chunk_amount_y - 1.0) / 2.0; j <= player_chunk_x + (self.chunk_amount_y - 1.0) / 2.0; j += 1.0; {
+                self.terrain.push(Lawn::new(i * dt * 100.0, j * dt * 100.0));
+                println!("LOAD CHUNKS",);
+            }}
+        }}
     }
-    fn on_load(&mut self) {
-        for _j in 0 .. 1 {
-            for i in 0 .. 1 {
+    /*fn on_load(&mut self) {
+        for _j in 0.0..1.0 {
+            for i in 0.0..1.0 {
                 self.terrain.push(Lawn::new(i));
                // self.trees.push(Tree::new(i));
             }
         }
-    }
+    }*/
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
         let fuck_trees = &self.trees;
@@ -155,7 +156,6 @@ fn main() {
         .exit_on_esc(true)
         .build()
         .unwrap();
-
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
         player : Object::new(),
@@ -165,8 +165,8 @@ fn main() {
         height: height as f64,
         viewx: width as f64,
         viewy: height as f64,
-        chunk_size_x : 16.0,
-        chunk_size_y : 16.0,
+        chunk_size_x : 256.0/2.0,
+        chunk_size_y : 256.0/2.0,
         chunk_amount_x : 5.0,
         chunk_amount_y : 5.0,
         up_d: false,
@@ -174,11 +174,10 @@ fn main() {
         left_d: false,
         right_d: false
     };
-
-    cube.on_load();
+    //cube.on_load();
     let mut events = Events::new(EventSettings {
-        max_fps: 60,
-        ups: 30,
+        max_fps: 100,
+        ups: 50,
         ups_reset: 0,
         swap_buffers: true,
         bench_mode: false,
@@ -190,10 +189,12 @@ fn main() {
         }
         if let Some(r) = e.render_args() {
             cube.on_draw(&r);
-            cube.check_chunks();
         }
         if let Some(i) = e.button_args() {
             cube.on_input(&i);
+        }
+        if let Some(IdleArgs) = e.idle_args() {
+            cube.check_chunks(IdleArgs.dt);
         }
     }
 }
