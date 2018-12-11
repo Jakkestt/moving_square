@@ -18,9 +18,7 @@ use theme::Lawn;
 use object::Object;
 use tree::Tree;
 
-use piston::event_loop::EventSettings;
 use piston::window::WindowSettings;
-use piston::input;
 use piston_window::*;
 use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache };
 
@@ -37,8 +35,6 @@ pub struct Cube {
     chunk_size_y: f64,
     chunk_amount_x: f64,
     chunk_amount_y: f64,
-    chunk_x: f64,
-    chunk_y: f64,
     up_d: bool, down_d: bool, left_d: bool, right_d: bool
 }
 
@@ -46,21 +42,25 @@ impl Cube {
     pub fn check_chunks(&mut self) {
         let player_chunk_x = self.player.x/self.chunk_size_x;
         let player_chunk_y = self.player.y/self.chunk_size_y;
-        println!("{}", player_chunk_x, );
-        if self.chunk_x > player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0 ||
-           self.chunk_x < player_chunk_x - (self.chunk_amount_x - 1.0) / 2.0 ||
-           self.chunk_y > player_chunk_y + (self.chunk_amount_y - 1.0) / 2.0 ||
-           self.chunk_y < player_chunk_y - (self.chunk_amount_y - 1.0) / 2.0 {
-            println!("UNLOAD CHUNK", )
-        }
-        if player_chunk_x >= 8.0 {
-            for i in 1 .. 2 {
-                self.terrain.push(Lawn::new(i));
+        //println!("{}", player_chunk_x, );
+        for lawn in &self.terrain {
+            if lawn.x > player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0 ||
+                lawn.x < player_chunk_x - (self.chunk_amount_x - 1.0) / 2.0 ||
+                lawn.y > player_chunk_y + (self.chunk_amount_y - 1.0) / 2.0 ||
+                lawn.y < player_chunk_y - (self.chunk_amount_y - 1.0) / 2.0 {
+                println!("UNLOAD CHUNK", )
             }
-       }
+        }
+        for lawn in &self.terrain {
+            if lawn.x <= player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0 {
+                if lawn y <= player_chunk_y + (self.chunk_amount_y - 1.0) / 2.0 {
+                    println!("Fuck", )
+                }
+            }
+        }
     }
     fn on_load(&mut self) {
-        for j in 0 .. 1 {
+        for _j in 0 .. 1 {
             for i in 0 .. 1 {
                 self.terrain.push(Lawn::new(i));
                // self.trees.push(Tree::new(i));
@@ -169,8 +169,6 @@ fn main() {
         chunk_size_y : 16.0,
         chunk_amount_x : 5.0,
         chunk_amount_y : 5.0,
-        chunk_x : 0.0,
-        chunk_y : 0.0,
         up_d: false,
         down_d: false,
         left_d: false,
@@ -180,7 +178,7 @@ fn main() {
     cube.on_load();
     let mut events = Events::new(EventSettings {
         max_fps: 60,
-        ups: 60*2,
+        ups: 30,
         ups_reset: 0,
         swap_buffers: true,
         bench_mode: false,
@@ -192,6 +190,7 @@ fn main() {
         }
         if let Some(r) = e.render_args() {
             cube.on_draw(&r);
+            cube.check_chunks();
         }
         if let Some(i) = e.button_args() {
             cube.on_input(&i);
