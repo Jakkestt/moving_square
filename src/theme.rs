@@ -1,30 +1,29 @@
-use piston_window::*;
+use piston_window::{TextureSettings, Transformed, image, math};
 use opengl_graphics::{ GlGraphics, Texture };
+use std::path::Path;
 
-pub struct Theme {
+pub struct Lawn {
+    isbn: i32,
     pub x: f64,
     pub y: f64,
-    sprite: Option<Texture>
+    pub sprite: Texture
 }
 
 #[allow(dead_code)]
-impl Theme {
-    pub fn new() -> Theme {
-        Theme {x : 0.0, y : 0.0, sprite: None}
+impl Lawn {
+    pub fn new(i:f64, j:f64) -> Lawn {
+        let background = Texture::from_path(
+                    &Path::new("./assets/background.png"),
+                    &TextureSettings::new())
+                    .unwrap();
+        Lawn {x : i * 256.0, y : j * 256.0, sprite: background, isbn : 0}
     }
-    pub fn rendertheme(&self, gl: &mut GlGraphics, view: math::Matrix2d) {
-        let square = rectangle::square(0.0, 0.0, 0.0);
-        match self.sprite {
-            None => {
-                rectangle([0.0, 0.0, 0.0, 0.0], square, view.trans(self.x, self.y).trans(-25.0, -25.0), gl)
-            }
-            Some(ref sprite) => {
-                image(sprite, view.trans(self.x, self.y).trans(-1280.0 / 2.0, -720.0 / 2.0), gl)
-            }
-        }
+    pub fn renderterrain(&self, gl: &mut GlGraphics, view: math::Matrix2d) {
+        image(&self.sprite, view.trans(self.x, self.y).trans(-256.0 / 2.0, -256.0 / 2.0), gl)
     }
-    pub fn set_sprite(&mut self, sprite: Texture) {
-        self.sprite = Some(sprite);
+}
+impl PartialEq for Lawn {
+    fn eq(&self, other: &Lawn) -> bool {
+        self.isbn == other.isbn
     }
-
 }

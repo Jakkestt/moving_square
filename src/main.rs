@@ -10,52 +10,77 @@ extern crate gfx;
 extern crate rand;
 extern crate sprite;
 extern crate viewport;
+extern crate fps_counter;
 
 mod object;
 mod tree;
 mod theme;
-use theme::Theme;
+use theme::Lawn;
 use object::Object;
 use tree::Tree;
 
-use std::path::Path;
 use piston::window::WindowSettings;
-use piston::input::*;
 use piston_window::*;
-use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache, Texture };
+use opengl_graphics::{ GlGraphics, OpenGL, GlyphCache };
 
 pub struct Cube {
     gl: GlGraphics,
     player: Object,
-    trees: Tree,
-    theme: Theme,
+    trees: Vec<Tree>,
+    terrain: Vec<Lawn>,
     width: f64,
     height: f64,
-    size: f64,
+    viewx: f64,
+    viewy: f64,
+    chunk_size_x: f64,
+    chunk_size_y: f64,
+    chunk_amount_x: f64,
+    chunk_amount_y: f64,
     up_d: bool, down_d: bool, left_d: bool, right_d: bool
 }
 
 impl Cube {
-    fn on_load(&mut self, _w: &PistonWindow) {
-        let p1_sprite = Texture::from_path(
-                &Path::new("./assets/fuck.png"),
-                &TextureSettings::new()).unwrap();
-        self.player.set_sprite(p1_sprite);
-        let background = Texture::from_path(
-                &Path::new("./assets/background.png"),
-                &TextureSettings::new())
-                .unwrap();
-        self.theme.set_sprite(background);
-        let tree = Texture::from_path(
-                    &Path::new("./assets/Tree.png"),
-                    &TextureSettings::new())
-                    .unwrap();
-        self.trees.set_sprite(tree);
+    pub fn check_chunks(&mut self) {
+        let player_chunk_x = self.player.x/self.chunk_size_x;
+        let player_chunk_y = self.player.y/self.chunk_size_y;
+        let mut done = false;
+        //println!("{} {}", player_chunk_x, player_chunk_y);
+        for lawn in &self.terrain {
+            if lawn.x > player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0 ||
+                lawn.x < player_chunk_x - (self.chunk_amount_x - 1.0) / 2.0 ||
+                lawn.y > player_chunk_y + (self.chunk_amount_y - 1.0) / 2.0 ||
+                lawn.y < player_chunk_y - (self.chunk_amount_y - 1.0) / 2.0 {
+                //println!("UNLOAD CHUNK", )
+            }
+        }
+        let mut i = player_chunk_x - (self.chunk_amount_x - 1.0) / 2.0;
+        let mut j = player_chunk_y - (self.chunk_amount_y - 1.0) / 2.0;
+        while i <= player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0 {
+            while j <= player_chunk_y + (self.chunk_amount_y - 1.0) / 2.0 {
+                self.terrain.push(Lawn::new(i, j));
+                //println!("{} {}", i, j);
+                //println!("LOAD CHUNKS",);
+                while !done {
+                    if self.terrain.contains(&Lawn::new(i, j)) {
+                        println!("{} {}", i, j);
+                        done = true;
+                    }
+                }
+            }
+        }
     }
+    /*fn on_load(&mut self) {
+        for _j in 0.0..1.0 {
+            for i in 0.0..1.0 {
+                self.terrain.push(Lawn::new(i));
+               // self.trees.push(Tree::new(i));
+            }
+        }
+    }*/
     fn on_draw(&mut self, args: &RenderArgs) {
         let fuck_this = &self.player;
         let fuck_trees = &self.trees;
-        let fuck_theme = &self.theme;
+        let fuck_terrain = &self.terrain;
         let mut glyph_cache = GlyphCache::new("assets/FiraSans-Regular.ttf", (), TextureSettings::new()).unwrap();
         let textx = self.player.x.to_string();
         let texty = self.player.y.to_string();
@@ -64,8 +89,12 @@ impl Cube {
             let _view = c.transform.trans(w, h);
             let center = c.transform.trans(w / 2.0, h / 2.0);
             clear([0.0, 1.0, 0.0, 0.0], gl);
-            fuck_theme.rendertheme(gl, center);
-            fuck_trees.moar_trees(gl, center);
+            for lawn in fuck_terrain {
+                lawn.renderterrain(gl, center);
+            }
+            for tree in fuck_trees {
+                tree.moar_trees(gl, center);
+            }
             fuck_this.render(gl, center);
             text::Text::new_color([1.0, 0.0, 0.0, 1.0], 25).draw(&textx,
                                                                      &mut glyph_cache,
@@ -82,7 +111,6 @@ impl Cube {
         });
     }
     fn update(&mut self, upd: &UpdateArgs) {
-        let _rad = (self.size / 2.0) as f64;
         if self.up_d {
             self.player.mov(0.0, -500.0 * upd.dt);
         }
@@ -95,8 +123,8 @@ impl Cube {
         if self.right_d {
             self.player.mov(500.0 * upd.dt, 0.0);
         }
-        self.width = 800.0 - self.player.x * 2.;
-        self.height = 600.0 - self.player.y * 2.;
+        self.width = self.viewx - self.player.x * 2.0;
+        self.height = self.viewy - self.player.y * 2.0;
     }
     fn on_input(&mut self, button_args: &ButtonArgs) {
         match button_args.state {
@@ -137,22 +165,35 @@ fn main() {
         .exit_on_esc(true)
         .build()
         .unwrap();
-
     let mut cube = Cube {
         gl: GlGraphics::new(opengl),
         player : Object::new(),
-        trees : Tree::new(),
-        theme : Theme::new(),
+        trees : Vec::new(),
+        terrain : Vec::new(),
         width: width as f64,
         height: height as f64,
-        size: 50.0,
+        viewx: width as f64,
+        viewy: height as f64,
+        chunk_size_x : 256.0/2.0,
+        chunk_size_y : 256.0/2.0,
+        chunk_amount_x : 5.0,
+        chunk_amount_y : 5.0,
         up_d: false,
         down_d: false,
         left_d: false,
         right_d: false
     };
-    cube.on_load(&window);
-    while let Some(e) = window.next() {
+    //cube.on_load();
+    let mut events = Events::new(EventSettings {
+        max_fps: 100,
+        ups: 50,
+        ups_reset: 0,
+        swap_buffers: true,
+        bench_mode: false,
+        lazy: false,
+    });
+    cube.check_chunks();
+    while let Some(e) = events.next(&mut window) {
         if let Some(u) = e.update_args() {
             cube.update(&u);
         }
@@ -161,6 +202,8 @@ fn main() {
         }
         if let Some(i) = e.button_args() {
             cube.on_input(&i);
+        }
+        if let Some(IdleArgs) = e.idle_args() {
         }
     }
 }
