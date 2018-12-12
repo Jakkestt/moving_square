@@ -11,7 +11,6 @@ extern crate rand;
 extern crate sprite;
 extern crate viewport;
 extern crate fps_counter;
-#[macro_use] extern crate cfor;
 
 mod object;
 mod tree;
@@ -41,10 +40,11 @@ pub struct Cube {
 }
 
 impl Cube {
-    pub fn check_chunks(&mut self, dt: f64) {
+    pub fn check_chunks(&mut self) {
         let player_chunk_x = self.player.x/self.chunk_size_x;
         let player_chunk_y = self.player.y/self.chunk_size_y;
-        println!("{} {}", player_chunk_x, player_chunk_y);
+        let mut done = false;
+        //println!("{} {}", player_chunk_x, player_chunk_y);
         for lawn in &self.terrain {
             if lawn.x > player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0 ||
                 lawn.x < player_chunk_x - (self.chunk_amount_x - 1.0) / 2.0 ||
@@ -53,12 +53,21 @@ impl Cube {
                 //println!("UNLOAD CHUNK", )
             }
         }
-        cfor!{let mut i = player_chunk_x - (self.chunk_amount_x - 1.0) / 2.0; i <= player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0; i += 1.0; {
-            cfor!{let mut j = player_chunk_y - (self.chunk_amount_y - 1.0) / 2.0; j <= player_chunk_x + (self.chunk_amount_y - 1.0) / 2.0; j += 1.0; {
-                self.terrain.push(Lawn::new(i * dt * 100.0, j * dt * 100.0));
-                println!("LOAD CHUNKS",);
-            }}
-        }}
+        let mut i = player_chunk_x - (self.chunk_amount_x - 1.0) / 2.0;
+        let mut j = player_chunk_y - (self.chunk_amount_y - 1.0) / 2.0;
+        while i <= player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0 {
+            while j <= player_chunk_y + (self.chunk_amount_y - 1.0) / 2.0 {
+                self.terrain.push(Lawn::new(i, j));
+                //println!("{} {}", i, j);
+                //println!("LOAD CHUNKS",);
+                while !done {
+                    if self.terrain.contains(&Lawn::new(i, j)) {
+                        println!("{} {}", i, j);
+                        done = true;
+                    }
+                }
+            }
+        }
     }
     /*fn on_load(&mut self) {
         for _j in 0.0..1.0 {
@@ -183,6 +192,7 @@ fn main() {
         bench_mode: false,
         lazy: false,
     });
+    cube.check_chunks();
     while let Some(e) = events.next(&mut window) {
         if let Some(u) = e.update_args() {
             cube.update(&u);
@@ -194,7 +204,6 @@ fn main() {
             cube.on_input(&i);
         }
         if let Some(IdleArgs) = e.idle_args() {
-            cube.check_chunks(IdleArgs.dt);
         }
     }
 }
