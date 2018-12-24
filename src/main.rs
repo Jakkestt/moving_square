@@ -11,6 +11,7 @@ extern crate rand;
 extern crate sprite;
 extern crate viewport;
 extern crate fps_counter;
+#[macro_use] extern crate cfor;
 
 mod object;
 mod tree;
@@ -40,7 +41,7 @@ pub struct Cube {
 }
 
 impl Cube {
-    pub fn check_chunks(&mut self) {
+    pub fn check_chunks(&mut self, dt: f64) {
         let player_chunk_x = self.player.x/self.chunk_size_x;
         let player_chunk_y = self.player.y/self.chunk_size_y;
         let mut done = false;
@@ -53,21 +54,15 @@ impl Cube {
                 //println!("UNLOAD CHUNK", )
             }
         }
-        let mut i = player_chunk_x - (self.chunk_amount_x - 1.0) / 2.0;
-        let mut j = player_chunk_y - (self.chunk_amount_y - 1.0) / 2.0;
-        while i <= player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0 {
-            while j <= player_chunk_y + (self.chunk_amount_y - 1.0) / 2.0 {
-                self.terrain.push(Lawn::new(i, j));
-                //println!("{} {}", i, j);
-                //println!("LOAD CHUNKS",);
-                while !done {
-                    if self.terrain.contains(&Lawn::new(i, j)) {
-                        println!("{} {}", i, j);
-                        done = true;
-                    }
+        cfor!{let mut i = player_chunk_x - (self.chunk_amount_x - 1.0) / 2.0; i <= player_chunk_x + (self.chunk_amount_x - 1.0) / 2.0; i += 1.0; {
+            cfor!{let mut j = player_chunk_y - (self.chunk_amount_y - 1.0) / 2.0; j <= player_chunk_y + (self.chunk_amount_y - 1.0) / 2.0; j += 1.0; {
+                println!("{} {}", i, j);
+                if !self.terrain.contains(&Lawn::new(i, j)) {
+                    self.terrain.push(Lawn::new(i * dt * 100.0, j * dt * 100.0));
+                    println!("LOAD CHUNKS",);
                 }
-            }
-        }
+            }}
+        }}
     }
     /*fn on_load(&mut self) {
         for _j in 0.0..1.0 {
@@ -90,7 +85,7 @@ impl Cube {
             let center = c.transform.trans(w / 2.0, h / 2.0);
             clear([0.0, 1.0, 0.0, 0.0], gl);
             for lawn in fuck_terrain {
-                lawn.renderterrain(gl, center);
+                rectangle([1.0, 0.0, 0.0, 1.0], [0.0, 0.0, 10.0, 100.0], center, gl);
             }
             for tree in fuck_trees {
                 tree.moar_trees(gl, center);
@@ -176,8 +171,8 @@ fn main() {
         viewy: height as f64,
         chunk_size_x : 256.0/2.0,
         chunk_size_y : 256.0/2.0,
-        chunk_amount_x : 5.0,
-        chunk_amount_y : 5.0,
+        chunk_amount_x : 3.0,
+        chunk_amount_y : 3.0,
         up_d: false,
         down_d: false,
         left_d: false,
@@ -192,7 +187,6 @@ fn main() {
         bench_mode: false,
         lazy: false,
     });
-    cube.check_chunks();
     while let Some(e) = events.next(&mut window) {
         if let Some(u) = e.update_args() {
             cube.update(&u);
@@ -204,6 +198,7 @@ fn main() {
             cube.on_input(&i);
         }
         if let Some(IdleArgs) = e.idle_args() {
+            cube.check_chunks(IdleArgs.dt);
         }
     }
 }

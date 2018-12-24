@@ -20,6 +20,6 @@ impl Tree {
         Tree {x: (i as f64) * rng.gen_range(-600.0, 600.0), y: (i as f64) * rng.gen_range(-300.0, 300.0), sprite: treeimg}
     }
     pub fn moar_trees(&self, gl: &mut GlGraphics, view: math::Matrix2d) {
-    image(&self.sprite, view.trans(self.x, self.y).trans(-32.0, -32.0), gl)
+        image(&self.sprite, view.trans(self.x, self.y).trans(-32.0, -32.0), gl)
     }
 }
